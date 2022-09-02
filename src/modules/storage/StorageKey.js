@@ -1,0 +1,3 @@
+export const STORED_MNEMONIC = '@USER_MNEMONIC';
+export const STORED_ACCOUNTS = '@USER_ACCOUNTS';
+export const STORED_CHAIN_KEYS = '@CHAIN_KEYS';
