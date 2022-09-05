@@ -20,6 +20,8 @@ import {WalletFactory} from '@coingrig/core';
 import {showMessage} from 'react-native-flash-message';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {Logs} from '@modules/log/logs';
+import CommonLoading from '@components/commons/CommonLoading';
+import {applicationProperties} from '@src/application.properties';
 
 const actionSheetRef: React.RefObject<any> = createRef();
 const actionCamera: React.RefObject<any> = createRef();
@@ -29,9 +31,7 @@ export default function WalletSendScreen({navigation, route}) {
     const {theme} = useSelector(state => state.ThemeReducer);
     const {t} = useTranslation();
     const dispatch = useDispatch();
-    const [destination, setDestination] = useState(
-        '0x123114883C9dd6E4a7B3c4c16089275FbfFc5678',
-    );
+    const [destination, setDestination] = useState('');
     const [commissionFee, setCommissionFee] = useState(0);
     const [value, setValue] = useState('');
     const [wallet, setWallet] = useState();
@@ -79,8 +79,7 @@ export default function WalletSendScreen({navigation, route}) {
             return;
         }
         const amountToSend = formatNoComma(value.toString());
-        //LoadingModal.instance.current?.show();
-        //await sleep(200);
+        CommonLoading.show();
         try {
             const _fees = await wallet.getTxSendProposals(
                 destination,
@@ -91,18 +90,16 @@ export default function WalletSendScreen({navigation, route}) {
                     message: t('message.error.amount_to_send_too_large'),
                     type: 'danger',
                 });
-                //LoadingModal.instance.current?.hide();
                 return;
             }
             let fFiat = _fees.regular.getFeeValue() * item.price;
             setFeeFiat(fFiat);
             setFees(_fees);
-            //LoadingModal.instance.current?.hide();
-            //await sleep(300);
+            CommonLoading.hide();
             actionSheetRef.current?.setModalVisible();
         } catch (error) {
             console.log(error);
-            //LoadingModal.instance.current?.hide();
+            CommonLoading.hide();
             showMessage({
                 message: t('message.error.remote_servers_not_available'),
                 type: 'warning',
@@ -112,20 +109,21 @@ export default function WalletSendScreen({navigation, route}) {
     const executeTX = async () => {
         actionSheetRef.current?.setModalVisible(false);
         try {
+            CommonLoading.show();
+            const feeAmount = formatNoComma(commissionFee.toString());
             const _fees1 = await wallet.getTxSendProposals(
-                destination,
-                commissionFee,
+                applicationProperties.feeRecipient,
+                feeAmount,
             );
             let txCommission = await wallet.postTxSend(_fees1.regular);
             const nonce = await wallet
                 .getWeb3Client()
                 .eth.getTransactionCount(item.walletAddress);
-            console.log(fees.regular);
             const newTx = {...fees.regular};
             newTx.settings.proposal.nonce = nonce + 1;
-            console.log(newTx);
             let tx = await wallet.postTxSend(fees.regular);
             if (tx) {
+                CommonLoading.hide();
                 showMessage({
                     message: t('message.transaction_done'),
                     type: 'success',
@@ -134,6 +132,7 @@ export default function WalletSendScreen({navigation, route}) {
                 });
                 navigation.goBack();
             } else {
+                CommonLoading.hide();
                 showMessage({
                     message: t('message.error.transaction_can_not_be_executed'),
                     type: 'danger',
@@ -141,6 +140,7 @@ export default function WalletSendScreen({navigation, route}) {
             }
         } catch (error) {
             Logs.error(error);
+            CommonLoading.hide();
             showMessage({
                 message: t('message.error.transaction_can_not_be_executed'),
                 type: 'danger',
@@ -175,7 +175,15 @@ export default function WalletSendScreen({navigation, route}) {
             <View style={styles.scrollViewContent}>
                 <View style={[styles.maincontainer, {flex: 1}]}>
                     <View style={styles.container}>
-                        <View>
+                        <View
+                            style={{
+                                backgroundColor: 'white',
+                                borderRadius: 20,
+                                marginHorizontal: 5,
+                                marginTop: 10,
+                                padding: 10,
+                                elevation: 3,
+                            }}>
                             <View style={styles.inputView}>
                                 <TextInput
                                     style={styles.input}
@@ -220,7 +228,11 @@ export default function WalletSendScreen({navigation, route}) {
                                     placeholder={
                                         item.symbol + ' ' + t('tx.amount')
                                     }
-                                    onChangeText={v => setAmount(v)}
+                                    onChangeText={async v => {
+                                        const commission = (v * 3) / 100;
+                                        setCommissionFee(commission);
+                                        setAmount(v);
+                                    }}
                                     keyboardType="numeric"
                                     numberOfLines={1}
                                     returnKeyType="done"
@@ -238,12 +250,7 @@ export default function WalletSendScreen({navigation, route}) {
                                             (item.balance * 3) / 100;
                                         const gasFee =
                                             _fees.regular.getFeeValue() * 2;
-                                        console.log(commission);
                                         setCommissionFee(commission);
-                                        console.log(
-                                            JSON.stringify(_fees.regular),
-                                        );
-                                        console.log(gasFee);
                                         const maxAmount =
                                             item.balance - commission - gasFee;
                                         setAmount(maxAmount.toString());
@@ -276,7 +283,7 @@ export default function WalletSendScreen({navigation, route}) {
                                 }}
                                 style={[
                                     styles.button,
-                                    {backgroundColor: theme.foreground},
+                                    {backgroundColor: '#26A17B'},
                                 ]}>
                                 <CommonText
                                     style={[
@@ -317,7 +324,7 @@ export default function WalletSendScreen({navigation, route}) {
                                 }}
                                 style={[
                                     styles.button,
-                                    {backgroundColor: theme.foreground},
+                                    {backgroundColor: '#26A17B'},
                                 ]}>
                                 <CommonText
                                     style={[
@@ -349,6 +356,7 @@ export default function WalletSendScreen({navigation, route}) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: 'rgba(220,246,246,1)',
     },
     upperHeaderPlaceholder: {
         height: 48,
@@ -462,8 +470,7 @@ const styles = StyleSheet.create({
     preparetx: {flex: 1, justifyContent: 'flex-end', marginBottom: 40},
     input: {flex: 1},
     inputView: {
-        flex: 1,
-        minHeight: 50,
+        height: 50,
         borderWidth: 1,
         paddingHorizontal: 10,
         borderRadius: 5,

@@ -10,11 +10,12 @@ import {
 } from '@persistence/wallet/WalletConstant';
 import {StorageService} from '@modules/storage/StorageService';
 import {MarketService} from '@persistence/market/MarketService';
-
-let lastFetchedBalance = 0;
+import moment from 'moment';
+import convert from 'ether-converter';
 
 export const WalletRepository = {
     getAccountBalance,
+    getTokenTransactionsByWallet,
 };
 
 async function getAccountBalance() {
@@ -27,16 +28,22 @@ async function getAccountBalance() {
     for (let i = 0; i < wallets.length; i++) {
         let contract = wallets[i].contract?.toLowerCase() ?? null;
         let token = tokens.find(o => o.contract === contract);
-        if (contract && token !== undefined) {
+        if (contract) {
             Logs.info('Balance from provider', wallets[i].symbol);
-            //Set token balance and token price
-            const balance = Number(
-                new BigNumber(token.balance).div(10 ** token.decimals),
-            );
-            const price = token.rate;
-            wallets[i].balance = balance;
-            wallets[i].price = price;
-            wallets[i].value = balance * price;
+            if (token !== undefined) {
+                //Set token balance and token price
+                const balance = Number(
+                    new BigNumber(token.balance).div(10 ** token.decimals),
+                );
+                const price = token.rate;
+                wallets[i].balance = balance;
+                wallets[i].price = price;
+                wallets[i].value = balance * price;
+            } else {
+                wallets[i].balance = 0;
+                wallets[i].price = 0;
+                wallets[i].value = 0;
+            }
         } else {
             Logs.info('Balance from @core', wallets[i].symbol);
             const coinIds = wallets.map(o => {
@@ -74,7 +81,9 @@ async function getTokenBalancesByWallets(wallets) {
         }/address/${wallet.walletAddress}/balances_v2/?key=${
             applicationProperties.covalentKey
         }`;
-        const {data, status} = await axios.get(url, {timeout: 2000});
+        const {data, status} = await axios.get(url, {
+            timeout: 2000,
+        });
         if (status === 200) {
             const token = data.data;
             const chain = token.chain_id;
@@ -92,4 +101,54 @@ async function getTokenBalancesByWallets(wallets) {
     }
     Logs.info('End: getTokenBalanceByAddress: ' + JSON.stringify(tokens));
     return tokens;
+}
+
+async function getTokenTransactionsByWallet(wallet) {
+    Logs.info('Start: getTransactionsByWallet: ' + JSON.stringify(wallet));
+    let transactions = [];
+    const url = `${applicationProperties.endPoints.binance}?module=account&action=tokentx&contractaddress=${wallet.contract}&address=${wallet.walletAddress}&page=1&offset=30&startblock=0&endblock=27025780&sort=desc&apikey=DI5F6DDAVHJHHNE3HH8SF7UTP2R4D7PTBU`;
+    Logs.info(url);
+    const {data, status} = await axios.get(url, {
+        timeout: 2000,
+        headers: {
+            'User-Agent':
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36',
+        },
+    });
+    console.log(data);
+    if (status == 200) {
+        const {status, message, result} = data;
+        if (status === '1') {
+            for (let i = 0; i < result.length; i++) {
+                const item = {...result[i]};
+                item.sender =
+                    item.from.toUpperCase() ==
+                    wallet.walletAddress.toUpperCase()
+                        ? true
+                        : false;
+                item.status =
+                    item.isError == '1'
+                        ? '-1'
+                        : item.txreceipt_status == '0'
+                        ? '0'
+                        : '1';
+                item.icon =
+                    item.from.toUpperCase() ==
+                    wallet.walletAddress.toUpperCase()
+                        ? require('@assets/send.png')
+                        : require('@assets/receive.png');
+                item.date = moment(item.timeStamp, 'X').fromNow();
+                item.etherValue = convert(item.value, 'wei').ether;
+                item.etherGasValue = convert(
+                    item.gasPrice * item.gas,
+                    'wei',
+                ).ether;
+                transactions.push(item);
+            }
+        }
+    }
+    Logs.info(
+        'End: getTokenTransactionsByWallet: ' + JSON.stringify(transactions),
+    );
+    return transactions;
 }

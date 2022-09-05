@@ -14,11 +14,9 @@ import Icon, {Icons} from '@components/icons/Icons';
 import CommonTouchableOpacity from '@components/commons/CommonTouchableOpacity';
 import CommonText from '@components/commons/CommonText';
 import {formatCoins, formatPrice} from '@src/utils/CurrencyUtil';
-import {CHAIN_ID_MAP} from '@persistence/wallet/WalletConstant';
 
 export default function WalletDetailScreen({navigation, route}) {
     const {item} = route.params;
-    const {wallets, totalBalance} = useSelector(state => state.WalletReducer);
     const {theme} = useSelector(state => state.ThemeReducer);
     const {t} = useTranslation();
     const dispatch = useDispatch();
@@ -46,11 +44,7 @@ export default function WalletDetailScreen({navigation, route}) {
                         <Icon type={Icons.Feather} name={'arrow-left'} />
                     </CommonTouchableOpacity>
                     <CommonText>{item.symbol.toUpperCase()}</CommonText>
-                    <Icon
-                        type={Icons.Ionicons}
-                        name={'stats-chart'}
-                        size={19}
-                    />
+                    <View style={{width: 20}}></View>
                 </View>
             </SafeAreaView>
             <ScrollView
@@ -76,7 +70,7 @@ export default function WalletDetailScreen({navigation, route}) {
                                     fontSize: 12,
                                     color: theme.lighter,
                                 }}>
-                                {t('wallet.added_manually')}
+                                {item.name + ' ' + t('wallet.network')}
                             </CommonText>
                         </View>
                     </View>
@@ -100,13 +94,13 @@ export default function WalletDetailScreen({navigation, route}) {
                             }}
                             style={[
                                 styles.roundBtn,
-                                {backgroundColor: theme.foreground},
+                                {backgroundColor: '#26A17B'},
                             ]}>
                             <Icon
-                                type={Icons.Ionicons}
-                                name="arrow-up"
-                                size={20}
-                                color={theme.background}
+                                type={Icons.Entypo}
+                                name={'chevron-with-circle-up'}
+                                size={24}
+                                color={'white'}
                             />
                         </CommonTouchableOpacity>
                         <CommonText style={styles.round}>
@@ -122,50 +116,57 @@ export default function WalletDetailScreen({navigation, route}) {
                             }}
                             style={[
                                 styles.roundBtn,
-                                {backgroundColor: theme.foreground},
+                                {backgroundColor: '#26A17B'},
                             ]}>
                             <Icon
-                                name="arrow-down"
-                                size={20}
-                                type={Icons.Ionicons}
-                                color={theme.background}
+                                type={Icons.Entypo}
+                                name={'chevron-with-circle-down'}
+                                size={24}
+                                color={'white'}
                             />
                         </CommonTouchableOpacity>
                         <CommonText style={styles.round}>
                             {t('wallet.receive')}
                         </CommonText>
                     </View>
-                    {CHAIN_ID_MAP[item.chain] && (
-                        <View>
-                            <CommonTouchableOpacity
-                                style={[
-                                    styles.roundBtn,
-                                    {backgroundColor: theme.foreground},
-                                ]}>
-                                <Icon
-                                    type={Icons.FontAwesome}
-                                    name="exchange"
-                                    size={18}
-                                    color={theme.background}
-                                />
-                            </CommonTouchableOpacity>
-                            <CommonText style={styles.round}>
-                                {t('hub.swap')}
-                            </CommonText>
-                        </View>
-                    )}
-
                     <View>
                         <CommonTouchableOpacity
+                            onPress={() => {
+                                navigation.navigate('WalletBuyScreen', {
+                                    item: item,
+                                });
+                            }}
                             style={[
                                 styles.roundBtn,
-                                {backgroundColor: theme.foreground},
+                                {backgroundColor: '#26A17B'},
+                            ]}>
+                            <Icon
+                                type={Icons.Entypo}
+                                name={'credit-card'}
+                                size={24}
+                                color={'white'}
+                            />
+                        </CommonTouchableOpacity>
+                        <CommonText style={styles.round}>
+                            {t('wallet.buysell')}
+                        </CommonText>
+                    </View>
+                    <View>
+                        <CommonTouchableOpacity
+                            onPress={() => {
+                                navigation.navigate('WalletTransactionScreen', {
+                                    item: item,
+                                });
+                            }}
+                            style={[
+                                styles.roundBtn,
+                                {backgroundColor: '#26A17B'},
                             ]}>
                             <Icon
                                 type={Icons.FontAwesome}
-                                name="dollar"
-                                size={20}
-                                color={theme.background}
+                                name={'history'}
+                                size={24}
+                                color={'white'}
                             />
                         </CommonTouchableOpacity>
                         <CommonText style={styles.round}>
@@ -180,6 +181,7 @@ export default function WalletDetailScreen({navigation, route}) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: 'rgba(220,246,246,1)',
     },
     upperHeaderPlaceholder: {
         height: 48,

@@ -9,6 +9,7 @@ export const WalletService = {
     createWallets,
     getWallets,
     getAccountBalance,
+    getTokenTransactionsByWallet,
 };
 
 async function createWallets(mnemonic, coinList = []) {
@@ -84,6 +85,23 @@ async function getAccountBalance() {
         return {
             success: true,
             data: wallets,
+        };
+    } catch (error) {
+        console.log(error);
+        return {
+            success: false,
+            data: [],
+        };
+    }
+}
+
+async function getTokenTransactionsByWallet(wallet) {
+    try {
+        const transactions =
+            await WalletRepository.getTokenTransactionsByWallet(wallet);
+        return {
+            success: true,
+            data: transactions,
         };
     } catch (error) {
         console.log(error);

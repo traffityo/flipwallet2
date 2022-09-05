@@ -3,14 +3,16 @@ import {
     createStackNavigator,
 } from '@react-navigation/stack';
 import React, {useEffect, useRef, useState} from 'react';
-import BottomTabBarNavigator from '@modules/navigation/BottomTabBarNavigator';
 import ReEnterPinCodeScreen from '@screens/pincode/ReEnterPinCodeScreen';
 import {AppState} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import WalletDetailScreen from '@screens/wallet/WalletDetailScreen';
 import WalletReceiveScreen from '@screens/wallet/WalletReceiveScreen';
 import WalletSendScreen from '@screens/wallet/WalletSendScreen';
-import TokenScreen from '@screens/token/TokenScreen';
+import HomeScreen from '@screens/home/HomeScreen';
+import WalletBuyScreen from '@screens/wallet/WalletBuyScreen';
+import WalletTransactionScreen from '@screens/wallet/WalletTransactionScreen';
+import WalletTransactionDetailScreen from '@screens/wallet/WalletTransactionDetailScreen';
 
 const Stack = createStackNavigator();
 
@@ -45,10 +47,7 @@ function MainStackNavigator() {
                 headerShown: false,
                 cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
             }}>
-            <Stack.Screen
-                name="BottomTabBarNavigator"
-                component={BottomTabBarNavigator}
-            />
+            <Stack.Screen name="HomeScreen" component={HomeScreen} />
             <Stack.Screen
                 name="ReEnterPinCodeScreen"
                 component={ReEnterPinCodeScreen}
@@ -65,7 +64,15 @@ function MainStackNavigator() {
                 name="WalletSendScreen"
                 component={WalletSendScreen}
             />
-            <Stack.Screen name="TokenScreen" component={TokenScreen} />
+            <Stack.Screen name="WalletBuyScreen" component={WalletBuyScreen} />
+            <Stack.Screen
+                name="WalletTransactionScreen"
+                component={WalletTransactionScreen}
+            />
+            <Stack.Screen
+                name="WalletTransactionDetailScreen"
+                component={WalletTransactionDetailScreen}
+            />
         </Stack.Navigator>
     );
 }

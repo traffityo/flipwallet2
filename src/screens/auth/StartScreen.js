@@ -7,7 +7,6 @@ import CommonImage from '@components/commons/CommonImage';
 import {useSelector} from 'react-redux';
 import CommonText from '@components/commons/CommonText';
 import CommonButton from '@components/commons/CommonButton';
-import {StorageService} from '@modules/storage/StorageService';
 
 const StartScreen = () => {
     const navigation = useNavigation();
@@ -33,10 +32,10 @@ const StartScreen = () => {
             <View style={styles.bottomContainer}>
                 <CommonButton
                     text={t('init.new_wallet')}
-                    backgroundColor={theme.foreground}
+                    backgroundColor={'#26A17B'}
                     color={theme.background}
                     onPress={async () => {
-                        await StorageService.StorageClearAll();
+                        //await StorageService.StorageClearAll();
                         navigation.navigate('SetPinCodeScreen', {new: true});
                     }}
                 />
@@ -77,6 +76,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        backgroundColor: 'rgba(220,246,246,1)',
     },
     waves: {
         height: '70%',

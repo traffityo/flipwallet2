@@ -67,10 +67,7 @@ export default function IntroScreen({navigation}) {
             <View style={styles.footer}>
                 <CommonTouchableOpacity
                     onPress={nextPage}
-                    style={[
-                        styles.button,
-                        {backgroundColor: theme.foreground},
-                    ]}>
+                    style={[styles.button, {backgroundColor: '#26A17B'}]}>
                     <CommonText
                         style={[styles.text, {color: theme.background}]}>
                         {t('onboarding.next')}
@@ -83,6 +80,7 @@ export default function IntroScreen({navigation}) {
 export const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: 'rgba(220,246,246,1)',
     },
     pager: {
         flex: 5,

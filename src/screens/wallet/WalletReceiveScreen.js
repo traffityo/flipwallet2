@@ -11,7 +11,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import Share from 'react-native-share';
 
 export default function WalletReceiveScreen({navigation, route}) {
-    const {item} = route.params;
+    const {usdtWallet} = useSelector(state => state.WalletReducer);
     const {theme} = useSelector(state => state.ThemeReducer);
     const {t} = useTranslation();
     const dispatch = useDispatch();
@@ -22,7 +22,7 @@ export default function WalletReceiveScreen({navigation, route}) {
     const shareAddress = async () => {
         await Share.open({
             title: '',
-            message: item.walletAddress,
+            message: usdtWallet.walletAddress,
         });
     };
     useEffect(() => {}, []);
@@ -41,7 +41,7 @@ export default function WalletReceiveScreen({navigation, route}) {
                         }}>
                         <Icon type={Icons.Feather} name={'arrow-left'} />
                     </CommonTouchableOpacity>
-                    <CommonText>{item.symbol.toUpperCase()}</CommonText>
+                    <CommonText>{usdtWallet.symbol.toUpperCase()}</CommonText>
                     <Icon
                         type={Icons.Ionicons}
                         name={'stats-chart'}
@@ -53,24 +53,24 @@ export default function WalletReceiveScreen({navigation, route}) {
                 <View style={styles.qrCode}>
                     <View style={styles.qrCodeHeader}>
                         <CommonText style={[styles.text, styles.title]}>
-                            {item.name} {t('wallet.receive.wallet')}
+                            {usdtWallet.name} {t('wallet.receive.wallet')}
                         </CommonText>
                     </View>
 
                     <QRCode
-                        value={item.walletAddress}
+                        value={usdtWallet.walletAddress}
                         size={240}
                         backgroundColor={'white'}
                     />
                     <View style={styles.qrCodeFooter}>
                         <CommonText style={styles.text}>
-                            {item.walletAddress}
+                            {usdtWallet.walletAddress}
                         </CommonText>
                     </View>
                 </View>
                 <View style={styles.description}>
                     <CommonText style={styles.text}>
-                        {t('wallet.receive.sendOnly')} {item.symbol}{' '}
+                        {t('wallet.receive.sendOnly')} {usdtWallet.symbol}{' '}
                         {t('wallet.receive.toThisAddress')}
                     </CommonText>
                     <CommonText style={styles.text}>
@@ -81,7 +81,7 @@ export default function WalletReceiveScreen({navigation, route}) {
                     <CommonTouchableOpacity
                         style={styles.element}
                         onPress={async () => {
-                            await copyToClipboard(item.walletAddress);
+                            await copyToClipboard(usdtWallet.walletAddress);
                             setTooltipVisible(true);
                             setTimeout(() => {
                                 setTooltipVisible(false);
@@ -108,14 +108,6 @@ export default function WalletReceiveScreen({navigation, route}) {
                     </CommonTouchableOpacity>
                     <CommonTouchableOpacity
                         style={styles.element}
-                        onPress={async () => {}}>
-                        <View style={[styles.elementIcon]}>
-                            <Icon type={Icons.FontAwesome} name={'dollar'} />
-                        </View>
-                        <CommonText>{t('wallet.receive.setAmount')}</CommonText>
-                    </CommonTouchableOpacity>
-                    <CommonTouchableOpacity
-                        style={styles.element}
                         onPress={async () => {
                             await shareAddress();
                         }}>
@@ -136,6 +128,7 @@ export default function WalletReceiveScreen({navigation, route}) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: 'rgba(220,246,246,1)',
     },
     upperHeaderPlaceholder: {
         height: 48,
@@ -167,6 +160,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         paddingLeft: 10,
         paddingRight: 10,
+        elevation: 3,
     },
     qrCodeHeader: {
         height: 50,
@@ -187,7 +181,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     controls: {
-        width: '80%',
+        width: '40%',
         height: 100,
         flexDirection: 'row',
         justifyContent: 'space-between',

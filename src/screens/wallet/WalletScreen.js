@@ -144,7 +144,38 @@ export default function WalletScreen({navigation, route}) {
                     flex: 1,
                     backgroundColor: theme.background,
                 }}>
-                <View style={{backgroundColor: theme.background}}></View>
+                <View style={{backgroundColor: theme.background}}>
+                    {route.params.isSupported && platforms.length > 0 ? (
+                        <>
+                            <CommonText style={styles.choose_network}>
+                                {t('coindetails.choose_network')}
+                            </CommonText>
+                            <CommonFlatList
+                                data={platforms}
+                                keyExtractor={(item, index) => index.toString()}
+                                showsVerticalScrollIndicator={false}
+                                renderItem={({item}) => <View></View>}
+                            />
+
+                            <CommonText style={styles.chain_note}>
+                                {t('coindetails.chain_note')}
+                            </CommonText>
+                        </>
+                    ) : (
+                        <>
+                            <CommonText style={styles.choose_network}>
+                                {!route.params.isSupported
+                                    ? t('coindetails.not_available')
+                                    : t('coindetails.already_title')}
+                            </CommonText>
+                            <CommonText style={styles.manual_note}>
+                                {!route.params.isSupported
+                                    ? t('coindetails.manual_note')
+                                    : t('coindetails.already_note')}
+                            </CommonText>
+                        </>
+                    )}
+                </View>
             </ActionSheet>
         </View>
     );

@@ -1,10 +1,11 @@
 import React, {useEffect} from 'react';
 import {Provider} from 'react-redux';
 import {enableScreens} from 'react-native-screens';
-import {LogBox} from 'react-native';
+import {LogBox, StatusBar} from 'react-native';
 import ReduxStore from '@modules/redux/ReduxStore';
 import ApplicationNavigator from '@modules/navigation/ApplicationNavigator';
 import '@modules/i18n/i18n';
+import CommonLoading from '@components/commons/CommonLoading';
 
 enableScreens();
 LogBox.ignoreLogs(['Warning: Cannot']);
@@ -27,7 +28,13 @@ export default function App() {
     useEffect(() => {});
     return (
         <Provider store={ReduxStore}>
+            <StatusBar
+                hidden={false}
+                backgroundColor={'#26A17B'}
+                barStyle={'dark-content'}
+            />
             <ApplicationNavigator />
+            <CommonLoading ref={ref => CommonLoading.setRef(ref)} />
         </Provider>
     );
 }

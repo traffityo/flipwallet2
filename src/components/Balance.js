@@ -20,6 +20,7 @@ function Balance() {
                 type={Icons.FontAwesome5}
                 name={active ? 'eye' : 'eye-slash'}
                 size={18}
+                color={'white'}
             />
             <CommonText style={styles.balanceText}>
                 {active ? formatPrice(totalBalance) : '*******'}
@@ -30,14 +31,13 @@ function Balance() {
 
 const styles = StyleSheet.create({
     balanceContainer: {
-        height: '100%',
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
     },
     balanceText: {
         marginLeft: 5,
         fontSize: 18,
+        color: 'white',
     },
 });
 

@@ -18,7 +18,7 @@ export function PinCode(props) {
                 }
             }}
             touchIDDisabled={true}
-            colorCircleButtons={theme.darker}
+            colorCircleButtons={'#26A17B'}
             stylePinCodeDeleteButtonText={{color: theme.foreground}}
             colorPassword={theme.foreground}
             colorPasswordEmpty={theme.foreground}
@@ -27,7 +27,7 @@ export function PinCode(props) {
             stylePinCodeColorTitle={theme.foreground}
             stylePinCodeDeleteButtonthemehowUnderlay={theme.foreground}
             stylePinCodeDeleteButtonColorHideUnderlay={theme.foreground}
-            stylePinCodeButtonNumber={theme.foreground}
+            stylePinCodeButtonNumber={'white'}
             stylePinCodeTextButtonCircle={styles.pinCode}
             stylePinCodeTextSubtitle={styles.pinCode}
             stylePinCodeTextTitle={styles.pinCode}
