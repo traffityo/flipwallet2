@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import {LoadingIndicator} from 'react-native-expo-fancy-alerts';
+import {View} from 'react-native';
+import Lottie from 'lottie-react-native';
 
 class CommonLoading extends Component {
     static _ref = null;
@@ -45,7 +46,28 @@ class CommonLoading extends Component {
 
     render() {
         const {show} = this.state;
-        return <LoadingIndicator visible={show} />;
+        console.log(show);
+        if (show) {
+            return (
+                <View
+                    style={{
+                        height: '100%',
+                        width: '100%',
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        position: 'absolute',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}>
+                    <Lottie
+                        source={require('@assets/json/loading.json')}
+                        autoPlay
+                        loop
+                        style={{width: 172, height: 72}}
+                    />
+                </View>
+            );
+        }
+        return <></>;
     }
 }
 

@@ -31,7 +31,7 @@
     "setup.never_share": "Never share the recovery phrase with anyone!",
     "setup.continue": "Continue",
     "setup.verify_recovery_phrase": "Verify the recovery phrase",
-    "setup.paste_recovery_phrase": "Paste the recovery phrase",
+    "setup.paste_recovery_phrase": "Enter your recovery phrase",
     "setup.copy_in_order": "Make sure the words are in the right order and that there are no additional spaces from the original phrase",
     "setup.create_wallet": "Create wallet",
     "setup.generating_mnemonic": "Generating mnemonic...",

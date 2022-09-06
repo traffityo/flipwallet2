@@ -1,9 +1,8 @@
 import React, {useEffect} from 'react';
-import {CommonActions, useNavigation} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {PinCode} from '@components/PinCode';
-import {DeviceEventEmitter} from 'react-native';
+import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {useTranslation} from 'react-i18next';
-import {sleep} from '@src/utils/ThreadUtil';
 import {generateMnemonic} from '@coingrig/wallet-generator';
 import {WalletGenerator} from '@coingrig/core';
 import {COIN_LIST} from '@persistence/wallet/WalletConstant';
@@ -11,24 +10,20 @@ import {showMessage} from 'react-native-flash-message';
 import {useDispatch} from 'react-redux';
 import {UserAction} from '@persistence/user/UserAction';
 import {WalletAction} from '@persistence/wallet/WalletAction';
+import CommonTouchableOpacity from '@components/commons/CommonTouchableOpacity';
+import Icon, {Icons} from '@components/icons/Icons';
+import CommonLoading from '@components/commons/CommonLoading';
 
-const SetPinScreen = ({route}) => {
+const SetPinCodeScreen = ({route}) => {
     const navigation = useNavigation();
     const {t} = useTranslation();
     const dispatch = useDispatch();
+
     useEffect(() => {}, []);
 
     const success = async () => {
-        const goTo = route.params.new
-            ? 'GenerateWalletScreen'
-            : 'ImportWalletScreen';
-
+        const goTo = route.params.new ? 'GenerateWalletScreen' : 'ImportScreen';
         if (goTo === 'GenerateWalletScreen') {
-            DeviceEventEmitter.emit('showDoor', {
-                title: t('modal.please_wait'),
-                body: t('modal.remember_to_backup'),
-            });
-            await sleep(500);
             let newMnemonic;
             try {
                 const words = 12; // or 24
@@ -39,19 +34,15 @@ const SetPinScreen = ({route}) => {
             await createWallet(newMnemonic);
             return;
         }
-        navigation.dispatch(
-            CommonActions.reset({
-                index: 1,
-                routes: [{name: goTo}],
-            }),
-        );
+        navigation.navigate(goTo);
     };
     const createWallet = async mnemonic => {
+        CommonLoading.show();
         dispatch(WalletAction.createWallets(mnemonic, COIN_LIST)).then(
             ({success}) => {
                 if (success) {
                     dispatch(UserAction.signIn()).then(() => {
-                        DeviceEventEmitter.emit('hideDoor');
+                        CommonLoading.hide();
                     });
                 } else {
                     showMessage({
@@ -63,15 +54,35 @@ const SetPinScreen = ({route}) => {
         );
     };
     return (
-        <PinCode
-            onFail={() => {
-                console.log('Fail to auth');
-            }}
-            onSuccess={() => success()}
-            onClickButtonLockedPage={() => console.log('Quit')}
-            status={'choose'}
-        />
+        <SafeAreaView style={{flex: 1}}>
+            <View style={styles.header}>
+                <CommonTouchableOpacity
+                    onPress={() => {
+                        navigation.goBack();
+                    }}>
+                    <Icon type={Icons.Feather} name={'arrow-left'} />
+                </CommonTouchableOpacity>
+            </View>
+            <PinCode
+                onFail={() => {
+                    console.log('Fail to auth');
+                }}
+                onSuccess={() => success()}
+                onClickButtonLockedPage={() => console.log('Quit')}
+                status={'choose'}
+            />
+        </SafeAreaView>
     );
 };
-
-export default SetPinScreen;
+const styles = StyleSheet.create({
+    header: {
+        height: 48,
+        paddingHorizontal: 10,
+        width: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    loadingBackgroundStyle: {},
+});
+export default SetPinCodeScreen;

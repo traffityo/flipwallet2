@@ -37,6 +37,7 @@ function getWallets() {
 function getAccountBalance() {
     return async dispatch => {
         const {success, data} = await WalletService.getAccountBalance();
+
         if (success) {
             dispatch(getAccountBalanceSuccess(data));
         }

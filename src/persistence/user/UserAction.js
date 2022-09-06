@@ -27,7 +27,7 @@ function signUp(params) {
 
 function signOut() {
     return async dispatch => {
-        await StorageService.StorageSetItem('loggedIn', 'true', false);
+        await StorageService.StorageSetItem('loggedIn', 'false', true);
         dispatch(signOutSuccess());
     };
 }

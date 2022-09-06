@@ -1,5 +1,12 @@
 export const light = {
+    text: '#444',
+    text2: '#ccc',
+    text3: '#999',
+    button: '#9dcdfa',
+    button2: '#f6f6f6',
     black: '#353333',
+    buttonOverlay: '#08406e',
+    buttonText: '#026fbe',
     foreground: '#353333', //4d3e36
     background: '#fff',
     yellow: '#353333',

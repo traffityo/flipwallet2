@@ -1,341 +1,275 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React from 'react';
 import {
-    RefreshControl,
+    Animated,
+    Dimensions,
+    FlatList,
+    Image,
     SafeAreaView,
-    ScrollView,
+    StatusBar,
     StyleSheet,
+    Text,
     View,
 } from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
-import {WalletAction} from '@persistence/wallet/WalletAction';
-import {useTranslation} from 'react-i18next';
-import CommonText from '@components/commons/CommonText';
-import HeaderBackground from '@components/HeaderBackground';
-import Balance from '@components/Balance';
-import CommonImage from '@components/commons/CommonImage';
 import Icon, {Icons} from '@components/icons/Icons';
-import CommonTouchableOpacity from '@components/commons/CommonTouchableOpacity';
-import {formatCoins, formatPrice} from '@src/utils/CurrencyUtil';
+import {
+    Directions,
+    FlingGestureHandler,
+    State,
+} from 'react-native-gesture-handler';
 
-export default function HomeScreen({navigation, route}) {
-    const {t} = useTranslation();
-    const {bnbWallet, usdtWallet} = useSelector(state => state.WalletReducer);
-    const dispatch = useDispatch();
-    const [refreshing, setRefreshing] = useState(false);
-    useEffect(() => {
-        (async () => {})();
-    }, []);
-    const onRefresh = useCallback(async () => {
-        setRefreshing(true);
-        dispatch(WalletAction.getAccountBalance()).then(() => {
-            setRefreshing(false);
-        });
-    }, []);
+const DATA = [
+    {
+        title: 'Afro vibes',
+        location: 'Mumbai, India',
+        date: 'Nov 17th, 2020',
+        poster: 'https://www.creative-flyers.com/wp-content/uploads/2020/07/Afro-vibes-flyer-template.jpg',
+    },
+    {
+        title: 'Jungle Party',
+        location: 'Unknown',
+        date: 'Sept 3rd, 2020',
+        poster: 'https://www.creative-flyers.com/wp-content/uploads/2019/11/Jungle-Party-Flyer-Template-1.jpg',
+    },
+    {
+        title: '4th Of July',
+        location: 'New York, USA',
+        date: 'Oct 11th, 2020',
+        poster: 'https://www.creative-flyers.com/wp-content/uploads/2020/06/4th-Of-July-Invitation.jpg',
+    },
+    {
+        title: 'Summer festival',
+        location: 'Bucharest, Romania',
+        date: 'Aug 17th, 2020',
+        poster: 'https://www.creative-flyers.com/wp-content/uploads/2020/07/Summer-Music-Festival-Poster.jpg',
+    },
+    {
+        title: 'BBQ with friends',
+        location: 'Prague, Czech Republic',
+        date: 'Sept 11th, 2020',
+        poster: 'https://www.creative-flyers.com/wp-content/uploads/2020/06/BBQ-Flyer-Psd-Template.jpg',
+    },
+    {
+        title: 'Festival music',
+        location: 'Berlin, Germany',
+        date: 'Apr 21th, 2021',
+        poster: 'https://www.creative-flyers.com/wp-content/uploads/2020/06/Festival-Music-PSD-Template.jpg',
+    },
+    {
+        title: 'Beach House',
+        location: 'Liboa, Portugal',
+        date: 'Aug 12th, 2020',
+        poster: 'https://www.creative-flyers.com/wp-content/uploads/2020/06/Summer-Beach-House-Flyer.jpg',
+    },
+];
+const {width} = Dimensions.get('screen');
+const OVERFLOW_HEIGHT = 70;
+const SPACING = 10;
+const ITEM_WIDTH = width * 0.9;
+const ITEM_HEIGHT = 150;
+const VISIBLE_ITEMS = 3;
+const OverflowItems = ({data, scrollXAnimated}) => {
+    const inputRange = [-1, 0, 1];
+    const translateY = scrollXAnimated.interpolate({
+        inputRange,
+        outputRange: [OVERFLOW_HEIGHT, 0, -OVERFLOW_HEIGHT],
+    });
     return (
-        <View style={[styles.container]}>
-            <HeaderBackground />
-            <ScrollView
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{minHeight: 790}}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                    />
-                }>
-                <SafeAreaView style={styles.header}>
-                    <View style={styles.balanceContainer}>
-                        <View style={styles.balance}>
-                            <CommonText style={styles.balanceText}>
-                                Your Balance:
-                            </CommonText>
-                            <Balance />
+        <View style={styles.overflowContainer}>
+            <Animated.View style={{transform: [{translateY}]}}>
+                {data.map((item, index) => {
+                    return (
+                        <View key={index} style={styles.itemContainer}>
+                            <Text style={[styles.title]} numberOfLines={1}>
+                                {item.title}
+                            </Text>
+                            <View style={styles.itemContainerRow}>
+                                <Text style={[styles.location]}>
+                                    <Icon
+                                        type={Icons.EvilIcons}
+                                        name="location"
+                                        size={16}
+                                        color="black"
+                                        style={{marginRight: 5}}
+                                    />
+                                    {item.location}
+                                </Text>
+                                <Text style={[styles.date]}>{item.date}</Text>
+                            </View>
                         </View>
-                        <View style={styles.logo}>
-                            <CommonImage
-                                source={{
-                                    uri: 'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png',
-                                }}
-                                style={{width: 38, height: 38}}
-                            />
-                        </View>
-                    </View>
-                </SafeAreaView>
+                    );
+                })}
+            </Animated.View>
+        </View>
+    );
+};
+export default function HomeScreen() {
+    const [data, setData] = React.useState(DATA);
+    const scrollXIndex = React.useRef(new Animated.Value(0)).current;
+    const scrollXAnimated = React.useRef(new Animated.Value(0)).current;
+    const [index, setIndex] = React.useState(0);
+    const setActiveIndex = React.useCallback(activeIndex => {
+        scrollXIndex.setValue(activeIndex);
+        setIndex(activeIndex);
+    });
 
-                <SafeAreaView style={styles.content}>
-                    <View style={styles.featureContainer}>
-                        <CommonTouchableOpacity
-                            onPress={() => {
-                                navigation.navigate('WalletSendScreen', {
-                                    item: usdtWallet,
-                                });
+    React.useEffect(() => {
+        if (index === data.length - VISIBLE_ITEMS - 1) {
+            // get new data
+            // fetch more data
+            const newData = [...data, ...data];
+            setData(newData);
+        }
+    });
+
+    React.useEffect(() => {
+        Animated.spring(scrollXAnimated, {
+            toValue: scrollXIndex,
+            useNativeDriver: true,
+        }).start();
+    });
+
+    return (
+        <View style={{width: '100%', height: 300}}>
+            <FlingGestureHandler
+                key="left"
+                direction={Directions.LEFT}
+                onHandlerStateChange={ev => {
+                    if (ev.nativeEvent.state === State.END) {
+                        if (index === data.length - 1) {
+                            return;
+                        }
+                        setActiveIndex(index + 1);
+                    }
+                }}>
+                <FlingGestureHandler
+                    key="right"
+                    direction={Directions.RIGHT}
+                    onHandlerStateChange={ev => {
+                        if (ev.nativeEvent.state === State.END) {
+                            if (index === 0) {
+                                return;
+                            }
+                            setActiveIndex(index - 1);
+                        }
+                    }}>
+                    <SafeAreaView style={styles.container}>
+                        <StatusBar hidden />
+                        <OverflowItems
+                            data={data}
+                            scrollXAnimated={scrollXAnimated}
+                        />
+                        <FlatList
+                            data={data}
+                            keyExtractor={(_, index) => String(index)}
+                            horizontal
+                            inverted
+                            contentContainerStyle={{
+                                flex: 1,
+                                justifyContent: 'center',
+                                padding: SPACING * 2,
                             }}
-                            style={styles.featureItemContainer}>
-                            <View style={styles.featureItem}>
-                                <Icon
-                                    type={Icons.Entypo}
-                                    name={'chevron-with-circle-up'}
-                                    size={24}
-                                    color={'#26A17B'}
-                                />
-                            </View>
-                            <CommonText style={styles.featureItemText}>
-                                Send
-                            </CommonText>
-                        </CommonTouchableOpacity>
-                        <CommonTouchableOpacity
-                            onPress={() => {
-                                navigation.navigate('WalletReceiveScreen', {
-                                    item: usdtWallet,
-                                });
+                            scrollEnabled={false}
+                            removeClippedSubviews={false}
+                            CellRendererComponent={({
+                                item,
+                                index,
+                                children,
+                                style,
+                                ...props
+                            }) => {
+                                const newStyle = [
+                                    style,
+                                    {zIndex: data.length - index},
+                                ];
+                                return (
+                                    <View
+                                        style={newStyle}
+                                        index={index}
+                                        {...props}>
+                                        {children}
+                                    </View>
+                                );
                             }}
-                            style={styles.featureItemContainer}>
-                            <View style={styles.featureItem}>
-                                <Icon
-                                    type={Icons.Entypo}
-                                    name={'chevron-with-circle-down'}
-                                    size={24}
-                                    color={'#26A17B'}
-                                />
-                            </View>
-                            <CommonText style={styles.featureItemText}>
-                                Receive
-                            </CommonText>
-                        </CommonTouchableOpacity>
-                        <CommonTouchableOpacity
-                            onPress={() => {
-                                navigation.navigate('WalletBuyScreen', {
-                                    item: usdtWallet,
+                            renderItem={({item, index}) => {
+                                const inputRange = [
+                                    index - 1,
+                                    index,
+                                    index + 1,
+                                ];
+                                const translateX = scrollXAnimated.interpolate({
+                                    inputRange,
+                                    outputRange: [50, 0, -100],
                                 });
+                                const scale = scrollXAnimated.interpolate({
+                                    inputRange,
+                                    outputRange: [0.8, 1, 1.3],
+                                });
+                                const opacity = scrollXAnimated.interpolate({
+                                    inputRange,
+                                    outputRange: [1 - 1 / VISIBLE_ITEMS, 1, 0],
+                                });
+
+                                return (
+                                    <Animated.View
+                                        style={{
+                                            position: 'absolute',
+                                            left: -ITEM_WIDTH / 2,
+                                            opacity,
+                                            transform: [
+                                                {
+                                                    translateX,
+                                                },
+                                                {scale},
+                                            ],
+                                        }}>
+                                        <Image
+                                            source={{uri: item.poster}}
+                                            style={{
+                                                width: ITEM_WIDTH,
+                                                height: ITEM_HEIGHT,
+                                                borderRadius: 14,
+                                            }}
+                                        />
+                                    </Animated.View>
+                                );
                             }}
-                            style={styles.featureItemContainer}>
-                            <View style={styles.featureItem}>
-                                <Icon
-                                    type={Icons.Entypo}
-                                    name={'credit-card'}
-                                    size={24}
-                                    color={'#26A17B'}
-                                />
-                            </View>
-                            <CommonText style={styles.featureItemText}>
-                                Buy
-                            </CommonText>
-                        </CommonTouchableOpacity>
-                        <CommonTouchableOpacity
-                            onPress={() => {
-                                navigation.navigate('WalletTransactionScreen', {
-                                    item: usdtWallet,
-                                });
-                            }}
-                            style={styles.featureItemContainer}>
-                            <View style={styles.featureItem}>
-                                <Icon
-                                    type={Icons.FontAwesome}
-                                    name={'history'}
-                                    size={24}
-                                    color={'#26A17B'}
-                                />
-                            </View>
-                            <CommonText style={styles.featureItemText}>
-                                History
-                            </CommonText>
-                        </CommonTouchableOpacity>
-                    </View>
-                    <View style={styles.transactionContainer}>
-                        <View style={styles.transactionTitle}>
-                            <CommonText style={styles.transactionTitleText}>
-                                Assets
-                            </CommonText>
-                        </View>
-                        <CommonTouchableOpacity
-                            style={styles.transactionItem}
-                            onPress={() => {
-                                navigation.navigate('WalletDetailScreen', {
-                                    item: bnbWallet,
-                                });
-                            }}>
-                            <View style={styles.itemIcon}>
-                                <CommonImage
-                                    source={{uri: bnbWallet.image}}
-                                    style={{width: 32, height: 32}}
-                                />
-                            </View>
-                            <View style={styles.itemDetail}>
-                                <CommonText
-                                    ellipsizeMode="middle"
-                                    numberOfLines={1}
-                                    style={styles.itemToAddressText}>
-                                    {bnbWallet.name}
-                                </CommonText>
-                                <CommonText style={styles.itemAmountSub}>
-                                    {bnbWallet.symbol}
-                                </CommonText>
-                            </View>
-                            <View style={styles.itemAmount}>
-                                <CommonText style={styles.itemAmountText}>
-                                    {formatCoins(bnbWallet.balance)}{' '}
-                                    {bnbWallet.symbol}
-                                </CommonText>
-                                <CommonText style={styles.itemAmountSub}>
-                                    {formatPrice(bnbWallet.value)}
-                                    {' USD'}
-                                </CommonText>
-                            </View>
-                        </CommonTouchableOpacity>
-                    </View>
-                </SafeAreaView>
-            </ScrollView>
+                        />
+                    </SafeAreaView>
+                </FlingGestureHandler>
+            </FlingGestureHandler>
         </View>
     );
 }
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    header: {
-        height: 160,
-        width: '100%',
         justifyContent: 'center',
-        alignItems: 'center',
+        backgroundColor: '#fff',
     },
-    content: {
-        flex: 1,
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
-        backgroundColor: 'rgba(220,246,246,1)',
-        padding: 10,
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 9,
-        },
-        shadowOpacity: 0.5,
-        shadowRadius: 12.35,
-
-        elevation: 19,
+    title: {
+        fontSize: 28,
+        fontWeight: '900',
+        textTransform: 'uppercase',
+        letterSpacing: -1,
     },
-    balanceContainer: {
-        height: 70,
-        width: '100%',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 10,
+    location: {
+        fontSize: 16,
     },
-    balance: {
-        flex: 1,
+    date: {
+        fontSize: 12,
     },
-    logo: {
-        flex: 1,
-        alignItems: 'flex-end',
+    itemContainer: {
+        height: OVERFLOW_HEIGHT,
+        padding: SPACING * 2,
     },
-    balanceText: {
-        color: 'white',
-    },
-    featureContainer: {
-        backgroundColor: '#26A17B',
-        height: 100,
-        width: '100%',
-        borderRadius: 20,
-        marginTop: 10,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 20,
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 9,
-        },
-        shadowOpacity: 0.5,
-        shadowRadius: 12.35,
-
-        elevation: 19,
-    },
-    featureItemContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    featureItem: {
-        width: 50,
-        height: 50,
-        backgroundColor: 'white',
-        borderRadius: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    featureItemText: {
-        color: 'white',
-        fontWeight: 'bold',
-        marginTop: 3,
-    },
-    transactionContainer: {
-        flex: 1,
-        alignItems: 'center',
-    },
-    transactionTitle: {
-        height: 50,
-        width: '100%',
+    itemContainerRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
     },
-    transactionTitleText: {
-        fontWeight: 'bold',
-        fontSize: 20,
-    },
-    transactionTitleText2: {
-        color: '#569df8',
-        fontSize: 13,
-    },
-    transactionItem: {
-        width: '100%',
-        height: 70,
-        backgroundColor: 'white',
-        borderRadius: 10,
-        shadowColor: '#8f8f8f',
-        shadowOffset: {
-            width: 0,
-            height: 1,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 1.84,
-
-        elevation: 5,
-        padding: 10,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-    itemIcon: {
-        width: 30,
-        height: 50,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    itemAmount: {
-        width: 120,
-        height: '100%',
-        alignItems: 'flex-end',
-        justifyContent: 'center',
-    },
-    itemDetail: {
-        flex: 1,
-        paddingLeft: 10,
-    },
-    itemAmountText: {
-        fontSize: 15,
-        fontWeight: 'bold',
-    },
-    itemAmountSub: {
-        color: '#8c8c8c',
-        fontSize: 13,
-        fontWeight: 'bold',
-    },
-    itemToAddressText: {
-        color: '#343434',
-        fontSize: 15,
-        fontWeight: 'bold',
+    overflowContainer: {
+        height: OVERFLOW_HEIGHT,
+        overflow: 'hidden',
     },
 });

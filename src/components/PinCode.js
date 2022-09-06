@@ -18,19 +18,19 @@ export function PinCode(props) {
                 }
             }}
             touchIDDisabled={true}
-            colorCircleButtons={'#26A17B'}
-            stylePinCodeDeleteButtonText={{color: theme.foreground}}
-            colorPassword={theme.foreground}
-            colorPasswordEmpty={theme.foreground}
-            numbersButtonOverlayColor={theme.lighter}
-            stylePinCodethemeubtitle={theme.foreground}
-            stylePinCodeColorTitle={theme.foreground}
-            stylePinCodeDeleteButtonthemehowUnderlay={theme.foreground}
-            stylePinCodeDeleteButtonColorHideUnderlay={theme.foreground}
-            stylePinCodeButtonNumber={'white'}
-            stylePinCodeTextButtonCircle={styles.pinCode}
-            stylePinCodeTextSubtitle={styles.pinCode}
-            stylePinCodeTextTitle={styles.pinCode}
+            colorCircleButtons={theme.button2}
+            stylePinCodeDeleteButtonText={{color: theme.text2}}
+            colorPassword={theme.text}
+            colorPasswordEmpty={theme.text}
+            numbersButtonOverlayColor={theme.text}
+            stylePinCodeColorSubtitle={theme.text}
+            stylePinCodeColorTitle={theme.text}
+            stylePinCodeDeleteButtonthemeShowUnderlay={theme.text}
+            stylePinCodeDeleteButtonColorHideUnderlay={theme.text2}
+            stylePinCodeButtonNumber={theme.text}
+            stylePinCodeTextButtonCircle={styles.text}
+            stylePinCodeTextSubtitle={styles.text}
+            stylePinCodeTextTitle={styles.text}
             styleLockScreenButton={{transform: [{scale: 0}]}}
             buttonDeleteText={t('pincode.buttonDeleteText')}
             subtitleChoose={t('pincode.subtitleChoose')}
@@ -57,5 +57,8 @@ export function PinCode(props) {
 const styles = StyleSheet.create({
     pinCode: {
         fontWeight: '300',
+    },
+    text: {
+        fontWeight: '500',
     },
 });

@@ -6,15 +6,13 @@ function CommonText({style, ...rest}) {
     const {theme} = useSelector(state => state.ThemeReducer);
     const {children} = {...rest};
     return (
-        <Text {...rest} style={[styles.font, {color: theme.black}, style]}>
+        <Text {...rest} style={[styles.font, {color: theme.text}, style]}>
             {children}
         </Text>
     );
 }
 
 const styles = StyleSheet.create({
-    font: {
-        fontFamily: 'RobotoSlab-Medium',
-    },
+    font: {},
 });
 export default CommonText;
