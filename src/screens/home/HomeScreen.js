@@ -1,9 +1,13 @@
 import React from 'react';
-import {StyleSheet} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import Wallet from '@components/Wallet';
 
 export default function HomeScreen() {
-    return <Wallet />;
+    return (
+        <View style={{height: 300}}>
+            <Wallet />
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({

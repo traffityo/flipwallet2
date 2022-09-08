@@ -46,7 +46,6 @@ class CommonLoading extends Component {
 
     render() {
         const {show} = this.state;
-        console.log(show);
         if (show) {
             return (
                 <View

@@ -130,114 +130,105 @@ export default function Wallet() {
     });
 
     return (
-        <View style={{width: '100%', height: 300}}>
+        <FlingGestureHandler
+            key="left"
+            direction={Directions.LEFT}
+            onHandlerStateChange={ev => {
+                if (ev.nativeEvent.state === State.END) {
+                    if (index === data.length - 1) {
+                        return;
+                    }
+                    setActiveIndex(index + 1);
+                }
+            }}>
             <FlingGestureHandler
-                key="left"
-                direction={Directions.LEFT}
+                key="right"
+                direction={Directions.RIGHT}
                 onHandlerStateChange={ev => {
                     if (ev.nativeEvent.state === State.END) {
-                        if (index === data.length - 1) {
+                        if (index === 0) {
                             return;
                         }
-                        setActiveIndex(index + 1);
+                        setActiveIndex(index - 1);
                     }
                 }}>
-                <FlingGestureHandler
-                    key="right"
-                    direction={Directions.RIGHT}
-                    onHandlerStateChange={ev => {
-                        if (ev.nativeEvent.state === State.END) {
-                            if (index === 0) {
-                                return;
-                            }
-                            setActiveIndex(index - 1);
-                        }
-                    }}>
-                    <SafeAreaView style={styles.container}>
-                        <OverflowItems
-                            data={data}
-                            scrollXAnimated={scrollXAnimated}
-                        />
-                        <FlatList
-                            data={data}
-                            keyExtractor={(_, index) => String(index)}
-                            horizontal
-                            inverted
-                            contentContainerStyle={{
-                                flex: 1,
-                                justifyContent: 'center',
-                                padding: SPACING * 2,
-                            }}
-                            scrollEnabled={false}
-                            removeClippedSubviews={false}
-                            CellRendererComponent={({
-                                item,
-                                index,
-                                children,
+                <SafeAreaView style={styles.container}>
+                    <OverflowItems
+                        data={data}
+                        scrollXAnimated={scrollXAnimated}
+                    />
+                    <FlatList
+                        data={data}
+                        keyExtractor={(_, index) => String(index)}
+                        horizontal
+                        inverted
+                        contentContainerStyle={{
+                            flex: 1,
+                            justifyContent: 'center',
+                            padding: SPACING * 2,
+                        }}
+                        scrollEnabled={false}
+                        removeClippedSubviews={false}
+                        CellRendererComponent={({
+                            item,
+                            index,
+                            children,
+                            style,
+                            ...props
+                        }) => {
+                            const newStyle = [
                                 style,
-                                ...props
-                            }) => {
-                                const newStyle = [
-                                    style,
-                                    {zIndex: data.length - index},
-                                ];
-                                return (
-                                    <View
-                                        style={newStyle}
-                                        index={index}
-                                        {...props}>
-                                        {children}
-                                    </View>
-                                );
-                            }}
-                            renderItem={({item, index}) => {
-                                const inputRange = [
-                                    index - 1,
-                                    index,
-                                    index + 1,
-                                ];
-                                const translateX = scrollXAnimated.interpolate({
-                                    inputRange,
-                                    outputRange: [50, 0, -100],
-                                });
-                                const scale = scrollXAnimated.interpolate({
-                                    inputRange,
-                                    outputRange: [0.8, 1, 1.3],
-                                });
-                                const opacity = scrollXAnimated.interpolate({
-                                    inputRange,
-                                    outputRange: [1 - 1 / VISIBLE_ITEMS, 1, 0],
-                                });
+                                {zIndex: data.length - index},
+                            ];
+                            return (
+                                <View style={newStyle} index={index} {...props}>
+                                    {children}
+                                </View>
+                            );
+                        }}
+                        renderItem={({item, index}) => {
+                            const inputRange = [index - 1, index, index + 1];
+                            const translateX = scrollXAnimated.interpolate({
+                                inputRange,
+                                outputRange: [50, 0, -100],
+                            });
+                            const scale = scrollXAnimated.interpolate({
+                                inputRange,
+                                outputRange: [0.8, 1, 1.3],
+                            });
+                            const opacity = scrollXAnimated.interpolate({
+                                inputRange,
+                                outputRange: [1 - 1 / VISIBLE_ITEMS, 1, 0],
+                            });
 
-                                return (
-                                    <Animated.View
+                            return (
+                                <Animated.View
+                                    style={{
+                                        position: 'absolute',
+                                        left: -ITEM_WIDTH / 2,
+                                        opacity,
+                                        transform: [
+                                            {
+                                                translateX,
+                                            },
+                                            {scale},
+                                        ],
+                                    }}>
+                                    <Image
+                                        source={{uri: item.poster}}
                                         style={{
-                                            position: 'absolute',
-                                            left: -ITEM_WIDTH / 2,
-                                            opacity,
-                                            transform: [
-                                                {
-                                                    translateX,
-                                                },
-                                                {scale},
-                                            ],
-                                        }}>
-                                        <Image
-                                            source={{uri: item.poster}}
-                                            style={{
-                                                width: ITEM_WIDTH,
-                                                height: ITEM_HEIGHT,
-                                                borderRadius: 14,
-                                            }}
-                                        />
-                                    </Animated.View>
-                                );
-                            }}
-                        />
-                    </SafeAreaView>
-                </FlingGestureHandler>
+                                            width: ITEM_WIDTH,
+                                            height: ITEM_HEIGHT,
+                                            borderRadius: 14,
+                                        }}
+                                    />
+                                </Animated.View>
+                            );
+                        }}
+                    />
+                </SafeAreaView>
             </FlingGestureHandler>
-        </View>
+        </FlingGestureHandler>
     );
 }
 

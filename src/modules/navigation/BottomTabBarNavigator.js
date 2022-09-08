@@ -10,6 +10,7 @@ import CommonText from '@components/commons/CommonText';
 import {useSelector} from 'react-redux';
 import WalletScreen from '@screens/wallet/WalletScreen';
 import SwapScreen from '@screens/swap/SwapScreen';
+import Wallet from '@components/Wallet';
 
 const TabArr = [
     {
