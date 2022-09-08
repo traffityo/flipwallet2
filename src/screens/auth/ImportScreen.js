@@ -165,5 +165,6 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         paddingHorizontal: 10,
+        marginBottom: 10,
     },
 });

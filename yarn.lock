@@ -973,6 +973,11 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
+"@faker-js/faker@^7.5.0":
+  version "7.5.0"
+  resolved "https://registry.npmjs.org/@faker-js/faker/-/faker-7.5.0.tgz"
+  integrity sha512-8wNUCCUHvfvI0gQpDUho/3gPzABffnCn5um65F8dzQ86zz6dlt4+nmAA7PQUc8L+eH+9RgR/qzy5N/8kN0Ozdw==
+
 "@hapi/hoek@^9.0.0":
   version "9.3.0"
   resolved "https://registry.npmjs.org/@hapi/hoek/-/hoek-9.3.0.tgz"
@@ -2688,19 +2693,9 @@ bip32@2.0.6, bip32@^2.0.4:
     typeforce "^1.11.5"
     wif "^2.0.6"
 
-bip39@3.0.4:
+bip39@3.0.4, bip39@^3.0.4:
   version "3.0.4"
   resolved "https://registry.npmjs.org/bip39/-/bip39-3.0.4.tgz"
-  integrity sha512-YZKQlb752TrUWqHWj7XAwCSjYEgGAk+/Aas3V7NyjQeZYsztO8JnQUaCWhcnL4T+jL8nvB8typ2jRPzTlgugNw==
-  dependencies:
-    "@types/node" "11.11.6"
-    create-hash "^1.1.0"
-    pbkdf2 "^3.0.9"
-    randombytes "^2.0.1"
-
-bip39@^3.0.4:
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/bip39/-/bip39-3.0.4.tgz#5b11fed966840b5e1b8539f0f54ab6392969b2a0"
   integrity sha512-YZKQlb752TrUWqHWj7XAwCSjYEgGAk+/Aas3V7NyjQeZYsztO8JnQUaCWhcnL4T+jL8nvB8typ2jRPzTlgugNw==
   dependencies:
     "@types/node" "11.11.6"
@@ -6808,7 +6803,7 @@ lottie-ios@3.2.3:
 
 lottie-react-native@4.0.3:
   version "4.0.3"
-  resolved "https://registry.yarnpkg.com/lottie-react-native/-/lottie-react-native-4.0.3.tgz#2a2548b8fb6d30e45b55714ec57e986e4af6fcb0"
+  resolved "https://registry.npmjs.org/lottie-react-native/-/lottie-react-native-4.0.3.tgz"
   integrity sha512-cmMt/HEwTTzF3PQcE4VVl7jpBYC9cZD9pGz7ZLxYV13e5jWBvMCFKsQYHlYAo69fjXZ2YCum1AqEuez6kSbmCA==
   dependencies:
     invariant "^2.2.2"
@@ -8541,7 +8536,7 @@ react-native-logs@^3.0.4:
 
 react-native-mask-loader@^0.0.3:
   version "0.0.3"
-  resolved "https://registry.yarnpkg.com/react-native-mask-loader/-/react-native-mask-loader-0.0.3.tgz#4081db3a17b574c7b9057c89b39d23fbb2105a6e"
+  resolved "https://registry.npmjs.org/react-native-mask-loader/-/react-native-mask-loader-0.0.3.tgz"
   integrity sha512-qZ3UpaTCGxa7whx+v+zlqV6XaZlOEi68WN8ropG9lThGEFFgvD6CvUVx7OYUcX+o2eysldQ70cNczeOybKQ38w==
 
 react-native-onesignal@^4.3.4:

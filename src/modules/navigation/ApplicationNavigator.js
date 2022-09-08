@@ -3,9 +3,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import AuthenticationStackNavigator from '@modules/navigation/AuthenticationStackNavigator';
 import {withTranslation} from 'react-i18next';
 import {useSelector} from 'react-redux';
-import EntrySlide from '@components/EntrySlide';
-import MainStackNavigator from '@modules/navigation/MainStackNavigator';
-import FlashMessage from 'react-native-flash-message';
+import BottomTabBarNavigator from '@modules/navigation/BottomTabBarNavigator';
 
 function ApplicationNavigator() {
     const {theme} = useSelector(state => state.ThemeReducer);
@@ -19,12 +17,10 @@ function ApplicationNavigator() {
                 },
             }}>
             {loggedIn ? (
-                <MainStackNavigator />
+                <BottomTabBarNavigator />
             ) : (
                 <AuthenticationStackNavigator />
             )}
-            <EntrySlide />
-            <FlashMessage position="top" />
         </NavigationContainer>
     );
 }

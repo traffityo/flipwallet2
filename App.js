@@ -6,6 +6,7 @@ import ReduxStore from '@modules/redux/ReduxStore';
 import ApplicationNavigator from '@modules/navigation/ApplicationNavigator';
 import '@modules/i18n/i18n';
 import CommonLoading from '@components/commons/CommonLoading';
+import FlashMessage from 'react-native-flash-message';
 
 enableScreens();
 LogBox.ignoreLogs(['Warning: Cannot']);
@@ -30,11 +31,12 @@ export default function App() {
         <Provider store={ReduxStore}>
             <StatusBar
                 hidden={false}
-                backgroundColor={'#26A17B'}
+                backgroundColor={'#fff'}
                 barStyle={'dark-content'}
             />
             <ApplicationNavigator />
             <CommonLoading ref={ref => CommonLoading.setRef(ref)} />
+            <FlashMessage position="top" />
         </Provider>
     );
 }

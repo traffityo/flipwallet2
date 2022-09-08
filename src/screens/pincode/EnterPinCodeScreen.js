@@ -3,11 +3,12 @@ import {PinCode} from '@components/PinCode';
 import {WalletAction} from '@persistence/wallet/WalletAction';
 import {UserAction} from '@persistence/user/UserAction';
 import {useDispatch} from 'react-redux';
-import {DeviceEventEmitter, StyleSheet, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {useTranslation} from 'react-i18next';
 import CommonTouchableOpacity from '@components/commons/CommonTouchableOpacity';
 import Icon, {Icons} from '@components/icons/Icons';
 import {useNavigation} from '@react-navigation/native';
+import CommonLoading from '@components/commons/CommonLoading';
 
 const EnterPinCodeScreen = () => {
     const dispatch = useDispatch();
@@ -16,14 +17,11 @@ const EnterPinCodeScreen = () => {
     useEffect(() => {}, []);
 
     const success = async () => {
-        DeviceEventEmitter.emit('showDoor', {
-            title: t('modal.please_wait'),
-            body: t('modal.remember_to_backup'),
-        });
+        CommonLoading.show();
         dispatch(WalletAction.getWallets()).then(() => {
             dispatch(WalletAction.getAccountBalance()).then(() => {});
             dispatch(UserAction.signIn()).then(() => {
-                DeviceEventEmitter.emit('hideDoor');
+                CommonLoading.hide();
             });
         });
     };

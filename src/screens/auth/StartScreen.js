@@ -3,6 +3,7 @@ import {
     Animated,
     Dimensions,
     Image,
+    Platform,
     StyleSheet,
     Text,
     View,
@@ -164,7 +165,7 @@ const Item = ({imageUri, heading, description, index, scrollX}) => {
                     ]}>
                     {heading}
                 </Animated.Text>
-                <View style={{height: 120}}>
+                <View style={{height: Platform.OS === 'ios' ? 120 : 80}}>
                     <Animated.Text
                         style={[
                             styles.description,

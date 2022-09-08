@@ -9,6 +9,7 @@ import ColorUtil from '@src/utils/ColorUtil';
 import CommonText from '@components/commons/CommonText';
 import {useSelector} from 'react-redux';
 import WalletScreen from '@screens/wallet/WalletScreen';
+import SwapScreen from '@screens/swap/SwapScreen';
 
 const TabArr = [
     {
@@ -25,7 +26,7 @@ const TabArr = [
         label: 'Wallet',
         type: Icons.Feather,
         icon: 'credit-card',
-        component: WalletScreen,
+        component: SwapScreen,
         color: ColorUtil.black,
         alphaClr: ColorUtil.greenAlpha,
     },
@@ -34,7 +35,7 @@ const TabArr = [
         label: 'Add New',
         type: Icons.Feather,
         icon: 'plus-square',
-        component: WalletScreen,
+        component: SwapScreen,
         color: ColorUtil.black,
         alphaClr: ColorUtil.redAlpha,
     },
@@ -43,7 +44,7 @@ const TabArr = [
         label: 'Account',
         type: Icons.FontAwesome,
         icon: 'user-circle-o',
-        component: WalletScreen,
+        component: SwapScreen,
         color: ColorUtil.black,
         alphaClr: ColorUtil.purpleAlpha,
     },
@@ -78,20 +79,25 @@ const TabButton = props => {
                     ref={viewRef}
                     style={[
                         StyleSheet.absoluteFillObject,
-                        {backgroundColor: item.color, borderRadius: 16},
+                        {
+                            backgroundColor: '#9dcdfa',
+                            opacity: 0.2,
+                            borderRadius: 16,
+                        },
                     ]}
                 />
                 <View style={[styles.btn]}>
                     <Icon
                         type={item.type}
                         name={item.icon}
-                        color={focused ? theme.background : theme.black}
+                        color={focused ? theme.text : theme.black}
                     />
                     <Animatable.View ref={textViewRef}>
                         {focused && (
                             <CommonText
                                 style={{
-                                    color: theme.background,
+                                    color: theme.text,
+                                    fontWeight: 'bold',
                                     paddingHorizontal: 8,
                                 }}>
                                 {item.label}
@@ -140,6 +146,7 @@ const styles = StyleSheet.create({
     container: {
         justifyContent: 'center',
         alignItems: 'center',
+        flex: 1,
     },
     btn: {
         flexDirection: 'row',
