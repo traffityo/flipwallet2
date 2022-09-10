@@ -21,43 +21,43 @@ const DATA = [
         title: 'Afro vibes',
         location: 'Mumbai, India',
         date: 'Nov 17th, 2020',
-        poster: 'https://www.creative-flyers.com/wp-content/uploads/2020/07/Afro-vibes-flyer-template.jpg',
+        poster: require('@assets/card1.png'),
     },
     {
         title: 'Jungle Party',
         location: 'Unknown',
         date: 'Sept 3rd, 2020',
-        poster: 'https://www.creative-flyers.com/wp-content/uploads/2019/11/Jungle-Party-Flyer-Template-1.jpg',
+        poster: require('@assets/card2.png'),
     },
     {
         title: '4th Of July',
         location: 'New York, USA',
         date: 'Oct 11th, 2020',
-        poster: 'https://www.creative-flyers.com/wp-content/uploads/2020/06/4th-Of-July-Invitation.jpg',
+        poster: require('@assets/card3.png'),
     },
     {
         title: 'Summer festival',
         location: 'Bucharest, Romania',
         date: 'Aug 17th, 2020',
-        poster: 'https://www.creative-flyers.com/wp-content/uploads/2020/07/Summer-Music-Festival-Poster.jpg',
+        poster: require('@assets/card4.png'),
     },
     {
         title: 'BBQ with friends',
         location: 'Prague, Czech Republic',
         date: 'Sept 11th, 2020',
-        poster: 'https://www.creative-flyers.com/wp-content/uploads/2020/06/BBQ-Flyer-Psd-Template.jpg',
+        poster: require('@assets/card5.png'),
     },
     {
         title: 'Festival music',
         location: 'Berlin, Germany',
         date: 'Apr 21th, 2021',
-        poster: 'https://www.creative-flyers.com/wp-content/uploads/2020/06/Festival-Music-PSD-Template.jpg',
+        poster: require('@assets/card6.png'),
     },
     {
         title: 'Beach House',
         location: 'Liboa, Portugal',
         date: 'Aug 12th, 2020',
-        poster: 'https://www.creative-flyers.com/wp-content/uploads/2020/06/Summer-Beach-House-Flyer.jpg',
+        poster: require('@assets/card1.png'),
     },
 ];
 
@@ -215,7 +215,7 @@ export default function Wallet() {
                                         ],
                                     }}>
                                     <Image
-                                        source={{uri: item.poster}}
+                                        source={item.poster}
                                         style={{
                                             width: ITEM_WIDTH,
                                             height: ITEM_HEIGHT,
