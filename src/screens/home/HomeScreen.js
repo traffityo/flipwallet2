@@ -26,7 +26,7 @@ export default function HomeScreen() {
             </View>
             <SafeAreaView
                 style={{
-                    height: '100%',
+                    height: 500,
                 }}>
                 <Animated.FlatList
                     data={DATA2}
