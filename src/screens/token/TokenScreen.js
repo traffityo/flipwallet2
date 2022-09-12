@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {SafeAreaView, StyleSheet, TextInput, View} from 'react-native';
 import CommonText from '@components/commons/CommonText';
 import CommonTouchableOpacity from '@components/commons/CommonTouchableOpacity';
@@ -7,23 +7,108 @@ import CommonImage from '@components/commons/CommonImage';
 import tokens from '@assets/json/tokens.json';
 import {useTranslation} from 'react-i18next';
 import BigList from 'react-native-big-list';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import LinearGradient from 'react-native-linear-gradient';
+import {showMessage} from 'react-native-flash-message';
+import CommonLoading from '@components/commons/CommonLoading';
+import {WalletRepository} from '@persistence/wallet/WalletRepository';
+import {WalletService} from '@persistence/wallet/WalletService';
+import ActionSheet from 'react-native-actions-sheet';
+import CommonFlatList from '@components/commons/CommonFlatList';
+import {WalletAction} from '@persistence/wallet/WalletAction';
 
 export default function TokenScreen({navigation, route}) {
     const [data, setData] = useState(tokens);
-    const [showScreen, setShowScreen] = useState(false);
     const [searchText, setSearchText] = useState('');
     const {t} = useTranslation();
     const {theme} = useSelector(state => state.ThemeReducer);
-
+    const {wallets} = useSelector(state => state.WalletReducer);
+    const [coinData, setCoinData] = useState();
+    const [platforms, setPlatforms] = useState([]);
+    const dispatch = useDispatch();
+    const actionSheetRef = useRef();
     useEffect(() => {
         (async () => {})();
     }, []);
-
+    const chooseToken = async item => {
+        CommonLoading.show();
+        try {
+            const coinRes = await WalletRepository.getCoinDetails(item.id);
+            if (coinRes.success) {
+                let mappedPlatforms = [];
+                for (const [key, value] of Object.entries(
+                    coinRes.data.platforms,
+                )) {
+                    // Sanity check, the data comes with a "":"" pair
+                    if (key === '' || value === '') {
+                        continue;
+                    }
+                    // Is this chain supported?
+                    let platformChain =
+                        WalletService.getSupportedChainByName(key);
+                    if (platformChain === '') {
+                        continue;
+                    }
+                    let isExisted = false;
+                    for (let i = 0; i < wallets.length; i++) {
+                        if (
+                            wallets[i].chain === platformChain &&
+                            wallets[i].contract &&
+                            wallets[i].contract.toLowerCase() === value
+                        ) {
+                            isExisted = true;
+                            break;
+                        }
+                    }
+                    if (!isExisted) {
+                        mappedPlatforms.push({
+                            chain: platformChain,
+                            contract: value,
+                        });
+                    }
+                }
+                setPlatforms(mappedPlatforms);
+                setCoinData(coinRes.data);
+                CommonLoading.hide();
+                actionSheetRef.current?.setModalVisible(true);
+            } else {
+                CommonLoading.hide();
+                showMessage({
+                    message: t('message.error.remote_servers_not_available'),
+                    type: 'warning',
+                });
+            }
+        } catch (e) {
+            CommonLoading.hide();
+        }
+    };
+    const saveWallet = (platform, contract, external) => {
+        CommonLoading.show();
+        dispatch(
+            WalletAction.addWallet(coinData, platform, contract, external),
+        ).then(({success}) => {
+            CommonLoading.hide();
+            if (success) {
+                if (!external) {
+                    // Remove the added platform from the availability list to add
+                    setPlatforms(platforms.filter(o => o.chain !== platform));
+                }
+                actionSheetRef.current?.setModalVisible(false);
+                showMessage({
+                    message: t('message.wallet.token.added'),
+                    type: 'success',
+                });
+                navigation.goBack();
+            }
+        });
+    };
     const renderItem = ({item}) => {
         return (
-            <CommonTouchableOpacity onPress={() => {}} style={styles.item}>
+            <CommonTouchableOpacity
+                onPress={async () => {
+                    await chooseToken(item);
+                }}
+                style={styles.item}>
                 <CommonImage
                     style={styles.img}
                     source={{
@@ -110,6 +195,50 @@ export default function TokenScreen({navigation, route}) {
                         showsVerticalScrollIndicator={false}
                     />
                 </View>
+                <ActionSheet
+                    ref={actionSheetRef}
+                    gestureEnabled={true}
+                    headerAlwaysVisible
+                    containerStyle={{
+                        flex: 1,
+                        backgroundColor: theme.background,
+                    }}>
+                    <View style={{backgroundColor: theme.background}}>
+                        <CommonText style={styles.choose_network}>
+                            {t('coindetails.choose_network')}
+                        </CommonText>
+                        <CommonFlatList
+                            data={platforms}
+                            keyExtractor={item => item.chain}
+                            showsVerticalScrollIndicator={false}
+                            renderItem={({item}) => {
+                                const network =
+                                    WalletService.getSupportedChainNameByID(
+                                        item.chain,
+                                    );
+                                return (
+                                    <CommonTouchableOpacity
+                                        style={{
+                                            height: 40,
+                                            width: '100%',
+                                            backgroundColor: theme.background,
+                                            paddingHorizontal: 10,
+                                            marginBottom: 5,
+                                        }}
+                                        onPress={() => {
+                                            saveWallet(
+                                                item.chain,
+                                                item.contract,
+                                                false,
+                                            );
+                                        }}>
+                                        <CommonText>{network}</CommonText>
+                                    </CommonTouchableOpacity>
+                                );
+                            }}
+                        />
+                    </View>
+                </ActionSheet>
             </LinearGradient>
         </SafeAreaView>
     );
@@ -191,5 +320,11 @@ const styles = StyleSheet.create({
         marginTop: 1,
         borderTopEndRadius: 5,
         borderBottomEndRadius: 5,
+    },
+    choose_network: {
+        fontSize: 20,
+        textAlign: 'center',
+        marginTop: 15,
+        marginBottom: 25,
     },
 });

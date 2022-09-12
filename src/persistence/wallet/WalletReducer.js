@@ -4,21 +4,28 @@ const WalletReducer = createSlice({
     name: 'wallet',
     initialState: {
         wallets: [],
+        tokens: [],
         totalBalance: 0.0,
         mnemonic: '',
     },
     reducers: {
         createWalletsSuccess(state, {payload}) {
             state.wallets = payload.wallets;
+            state.tokens = payload.tokens;
             state.mnemonic = payload.mnemonic;
         },
         getWalletsSuccess(state, {payload}) {
             state.wallets = payload.wallets;
+            state.tokens = payload.tokens;
             state.mnemonic = payload.mnemonic;
         },
         getAccountBalanceSuccess(state, {payload}) {
-            state.wallets = payload;
-            state.totalBalance = Object.values(payload).reduce((sum, o) => {
+            state.wallets = payload.wallets;
+            state.tokens = payload.tokens;
+            state.totalBalance = Object.values([
+                ...payload.wallets,
+                ...payload.tokens,
+            ]).reduce((sum, o) => {
                 return sum + o.value;
             }, 0.0);
         },

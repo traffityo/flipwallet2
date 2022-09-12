@@ -23,9 +23,9 @@ const TabArr = [
     },
     {
         route: 'WalletScreen',
-        label: 'Wallet',
+        label: 'Market',
         type: Icons.Feather,
-        icon: 'credit-card',
+        icon: 'bar-chart',
         component: SwapScreen,
         color: ColorUtil.black,
         alphaClr: ColorUtil.greenAlpha,
@@ -91,13 +91,13 @@ const TabButton = props => {
                         type={item.type}
                         name={item.icon}
                         color={focused ? theme.text : theme.black}
+                        size={18}
                     />
                     <Animatable.View ref={textViewRef}>
                         {focused && (
                             <CommonText
                                 style={{
                                     color: theme.text,
-                                    fontWeight: 'bold',
                                     paddingHorizontal: 8,
                                 }}>
                                 {item.label}

@@ -6,6 +6,7 @@ import {
 } from '@persistence/wallet/WalletReducer';
 import {StorageService} from '@modules/storage/StorageService';
 import {MNEMONIC_KEY} from '@persistence/wallet/WalletConstant';
+import _ from 'lodash';
 
 export const WalletAction = {
     createWallets,
@@ -21,7 +22,29 @@ function createWallets(mnemonic, coinList = []) {
             coinList,
         );
         if (success) {
-            dispatch(createWalletsSuccess({mnemonic, wallets: data}));
+            const tokens = _.filter(data, function (wallet: any) {
+                return (
+                    wallet.symbol !== 'BTC' ||
+                    wallet.symbol !== 'ETH' ||
+                    wallet.symbol !== 'BNB' ||
+                    wallet.symbol !== 'MATIC'
+                );
+            });
+            const wallets = _.filter(data, function (wallet: any) {
+                return (
+                    wallet.symbol === 'BTC' ||
+                    wallet.symbol === 'ETH' ||
+                    wallet.symbol === 'BNB' ||
+                    wallet.symbol === 'MATIC'
+                );
+            });
+            dispatch(
+                createWalletsSuccess({
+                    mnemonic,
+                    wallets: wallets,
+                    tokens: tokens,
+                }),
+            );
         }
         return {success, data};
     };
@@ -35,7 +58,29 @@ function getWallets() {
             true,
         );
         if (success) {
-            dispatch(getWalletsSuccess({mnemonic: mnemonic, wallets: data}));
+            const tokens = _.filter(data, function (wallet: any) {
+                return (
+                    wallet.symbol !== 'BTC' &&
+                    wallet.symbol !== 'ETH' &&
+                    wallet.symbol !== 'BNB' &&
+                    wallet.symbol !== 'MATIC'
+                );
+            });
+            const wallets = _.filter(data, function (wallet: any) {
+                return (
+                    wallet.symbol === 'BTC' ||
+                    wallet.symbol === 'ETH' ||
+                    wallet.symbol === 'BNB' ||
+                    wallet.symbol === 'MATIC'
+                );
+            });
+            dispatch(
+                getWalletsSuccess({
+                    mnemonic: mnemonic,
+                    wallets: wallets,
+                    tokens: tokens,
+                }),
+            );
         }
         return {success, data};
     };
@@ -45,7 +90,25 @@ function getAccountBalance() {
     return async dispatch => {
         const {success, data} = await WalletService.getAccountBalance();
         if (success) {
-            dispatch(getAccountBalanceSuccess(data));
+            const tokens = _.filter(data, function (wallet: any) {
+                return (
+                    wallet.symbol !== 'BTC' &&
+                    wallet.symbol !== 'ETH' &&
+                    wallet.symbol !== 'BNB' &&
+                    wallet.symbol !== 'MATIC'
+                );
+            });
+            const wallets = _.filter(data, function (wallet: any) {
+                return (
+                    wallet.symbol === 'BTC' ||
+                    wallet.symbol === 'ETH' ||
+                    wallet.symbol === 'BNB' ||
+                    wallet.symbol === 'MATIC'
+                );
+            });
+            dispatch(
+                getAccountBalanceSuccess({wallets: wallets, tokens: tokens}),
+            );
         }
         return {success, data};
     };
@@ -60,7 +123,25 @@ function addWallet(token, chain, contract, external) {
             external,
         );
         if (success) {
-            dispatch(getAccountBalanceSuccess(data));
+            const tokens = _.filter(data, function (wallet: any) {
+                return (
+                    wallet.symbol !== 'BTC' &&
+                    wallet.symbol !== 'ETH' &&
+                    wallet.symbol !== 'BNB' &&
+                    wallet.symbol !== 'MATIC'
+                );
+            });
+            const wallets = _.filter(data, function (wallet: any) {
+                return (
+                    wallet.symbol === 'BTC' ||
+                    wallet.symbol === 'ETH' ||
+                    wallet.symbol === 'BNB' ||
+                    wallet.symbol === 'MATIC'
+                );
+            });
+            dispatch(
+                getAccountBalanceSuccess({wallets: wallets, tokens: tokens}),
+            );
         }
         return {success, data};
     };

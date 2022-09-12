@@ -13,7 +13,7 @@ import {useNavigation} from '@react-navigation/native';
 
 export default function HomeScreen() {
     const {theme} = useSelector(state => state.ThemeReducer);
-    const {wallets} = useSelector(state => state.WalletReducer);
+    const {tokens} = useSelector(state => state.WalletReducer);
     const navigation = useNavigation();
     return (
         <SafeAreaView>
@@ -50,7 +50,7 @@ export default function HomeScreen() {
                     </View>
 
                     <CommonFlatList
-                        data={wallets}
+                        data={tokens}
                         keyExtractor={item => item.symbol}
                         renderItem={({item, index}) => {
                             return (
