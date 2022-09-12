@@ -19,7 +19,6 @@ export default function ImportScreen({}) {
     const {t} = useTranslation();
     const navigation = useNavigation();
     const [mnemonics, setMnemonics] = React.useState('');
-    const [isDisabled, setIsDisabled] = React.useState(true);
     const dispatch = useDispatch();
 
     const createWallet = async () => {
