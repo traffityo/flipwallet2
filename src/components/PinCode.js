@@ -22,12 +22,12 @@ export function PinCode(props) {
             stylePinCodeDeleteButtonText={{color: theme.text2}}
             colorPassword={theme.text}
             colorPasswordEmpty={theme.text}
-            numbersButtonOverlayColor={theme.text}
+            numbersButtonOverlayColor={theme.button}
             stylePinCodeColorSubtitle={theme.text}
             stylePinCodeColorTitle={theme.text}
             stylePinCodeDeleteButtonthemeShowUnderlay={theme.text}
             stylePinCodeDeleteButtonColorHideUnderlay={theme.text2}
-            stylePinCodeButtonNumber={theme.text}
+            stylePinCodeButtonNumber={theme.text3}
             stylePinCodeTextButtonCircle={styles.text}
             stylePinCodeTextSubtitle={styles.text}
             stylePinCodeTextTitle={styles.text}

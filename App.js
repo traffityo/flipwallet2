@@ -31,7 +31,7 @@ export default function App() {
         <Provider store={ReduxStore}>
             <StatusBar
                 hidden={false}
-                backgroundColor={'#fff'}
+                backgroundColor={'#03050c'}
                 barStyle={'dark-content'}
             />
             <ApplicationNavigator />

@@ -1,5 +1,9 @@
 {
   "translation": {
+    "start.create_wallet": "Create New Wallet",
+    "start.let_go": "Let's go",
+    "start.create": "Create",
+    "start.import_wallet": "Import",
     "brand.message": "The Next-Gen Crypto Wallet",
     "title.news": "News",
     "title.add_custom_token": "Add Custom Token",

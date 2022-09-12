@@ -14,7 +14,7 @@ export default function SplashScreen({navigation}) {
                 applicationProperties.initKey,
                 true,
             );
-            if (_.isNil(isInitialized)) {
+            if (!_.isNil(isInitialized)) {
                 navigation.dispatch(
                     CommonActions.reset({
                         index: 1,

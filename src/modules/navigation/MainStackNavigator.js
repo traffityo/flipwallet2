@@ -9,10 +9,11 @@ import {useNavigation} from '@react-navigation/native';
 import WalletDetailScreen from '@screens/wallet/WalletDetailScreen';
 import WalletReceiveScreen from '@screens/wallet/WalletReceiveScreen';
 import WalletSendScreen from '@screens/wallet/WalletSendScreen';
-import HomeScreen from '@screens/home/HomeScreen';
 import WalletBuyScreen from '@screens/wallet/WalletBuyScreen';
 import WalletTransactionScreen from '@screens/wallet/WalletTransactionScreen';
 import WalletTransactionDetailScreen from '@screens/wallet/WalletTransactionDetailScreen';
+import TokenScreen from '@screens/token/TokenScreen';
+import BottomTabBarNavigator from '@modules/navigation/BottomTabBarNavigator';
 
 const Stack = createStackNavigator();
 
@@ -47,7 +48,10 @@ function MainStackNavigator() {
                 headerShown: false,
                 cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
             }}>
-            <Stack.Screen name="HomeScreen" component={HomeScreen} />
+            <Stack.Screen
+                name="BottomTabBarNavigator"
+                component={BottomTabBarNavigator}
+            />
             <Stack.Screen
                 name="ReEnterPinCodeScreen"
                 component={ReEnterPinCodeScreen}
@@ -73,6 +77,7 @@ function MainStackNavigator() {
                 name="WalletTransactionDetailScreen"
                 component={WalletTransactionDetailScreen}
             />
+            <Stack.Screen name="TokenScreen" component={TokenScreen} />
         </Stack.Navigator>
     );
 }

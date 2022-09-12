@@ -39,7 +39,7 @@ const Icon = ({type, name, color, size = 24, style}) => {
                 <Tag
                     name={name}
                     size={size || fontSize}
-                    color={color || theme.black}
+                    color={color || theme.button2}
                     style={style}
                 />
             )}

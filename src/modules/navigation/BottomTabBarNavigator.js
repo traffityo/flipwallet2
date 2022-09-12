@@ -10,7 +10,6 @@ import CommonText from '@components/commons/CommonText';
 import {useSelector} from 'react-redux';
 import WalletScreen from '@screens/wallet/WalletScreen';
 import SwapScreen from '@screens/swap/SwapScreen';
-import Wallet from '@components/Wallet';
 
 const TabArr = [
     {
@@ -121,7 +120,7 @@ export default function BottomTabBarNavigator() {
                     borderTopWidth: 0,
                     paddingVertical: 0,
                     height: Platform.OS === 'android' ? 55 : 90,
-                    backgroundColor: theme.background,
+                    backgroundColor: theme.gradientSecondary,
                 },
             }}>
             {TabArr.map((item, index) => {

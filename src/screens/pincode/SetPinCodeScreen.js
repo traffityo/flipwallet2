@@ -7,18 +7,19 @@ import {generateMnemonic} from '@coingrig/wallet-generator';
 import {WalletGenerator} from '@coingrig/core';
 import {COIN_LIST} from '@persistence/wallet/WalletConstant';
 import {showMessage} from 'react-native-flash-message';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {UserAction} from '@persistence/user/UserAction';
 import {WalletAction} from '@persistence/wallet/WalletAction';
 import CommonTouchableOpacity from '@components/commons/CommonTouchableOpacity';
 import Icon, {Icons} from '@components/icons/Icons';
 import CommonLoading from '@components/commons/CommonLoading';
+import LinearGradient from 'react-native-linear-gradient';
 
 const SetPinCodeScreen = ({route}) => {
     const navigation = useNavigation();
     const {t} = useTranslation();
     const dispatch = useDispatch();
-
+    const {theme} = useSelector(state => state.ThemeReducer);
     useEffect(() => {}, []);
 
     const success = async () => {
@@ -55,22 +56,26 @@ const SetPinCodeScreen = ({route}) => {
     };
     return (
         <SafeAreaView style={{flex: 1}}>
-            <View style={styles.header}>
-                <CommonTouchableOpacity
-                    onPress={() => {
-                        navigation.goBack();
-                    }}>
-                    <Icon type={Icons.Feather} name={'arrow-left'} />
-                </CommonTouchableOpacity>
-            </View>
-            <PinCode
-                onFail={() => {
-                    console.log('Fail to auth');
-                }}
-                onSuccess={() => success()}
-                onClickButtonLockedPage={() => console.log('Quit')}
-                status={'choose'}
-            />
+            <LinearGradient
+                colors={[theme.gradientPrimary, theme.gradientSecondary]}
+                style={styles.gradient}>
+                <View style={styles.header}>
+                    <CommonTouchableOpacity
+                        onPress={() => {
+                            navigation.goBack();
+                        }}>
+                        <Icon type={Icons.Feather} name={'arrow-left'} />
+                    </CommonTouchableOpacity>
+                </View>
+                <PinCode
+                    onFail={() => {
+                        console.log('Fail to auth');
+                    }}
+                    onSuccess={() => success()}
+                    onClickButtonLockedPage={() => console.log('Quit')}
+                    status={'choose'}
+                />
+            </LinearGradient>
         </SafeAreaView>
     );
 };
@@ -83,6 +88,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
     },
-    loadingBackgroundStyle: {},
+    gradient: {
+        width: '100%',
+        height: '110%',
+    },
 });
 export default SetPinCodeScreen;

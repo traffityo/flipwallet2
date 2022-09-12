@@ -115,7 +115,6 @@ async function getTokenTransactionsByWallet(wallet) {
                 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36',
         },
     });
-    console.log(data);
     if (status == 200) {
         const {status, message, result} = data;
         if (status === '1') {
