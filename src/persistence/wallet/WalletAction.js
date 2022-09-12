@@ -4,11 +4,14 @@ import {
     getAccountBalanceSuccess,
     getWalletsSuccess,
 } from '@persistence/wallet/WalletReducer';
+import {StorageService} from '@modules/storage/StorageService';
+import {MNEMONIC_KEY} from '@persistence/wallet/WalletConstant';
 
 export const WalletAction = {
     createWallets,
     getWallets,
     getAccountBalance,
+    addWallet,
 };
 
 function createWallets(mnemonic, coinList = []) {
@@ -18,7 +21,7 @@ function createWallets(mnemonic, coinList = []) {
             coinList,
         );
         if (success) {
-            dispatch(createWalletsSuccess(data));
+            dispatch(createWalletsSuccess({mnemonic, wallets: data}));
         }
         return {success, data};
     };
@@ -27,8 +30,12 @@ function createWallets(mnemonic, coinList = []) {
 function getWallets() {
     return async dispatch => {
         const {success, data} = await WalletService.getWallets();
+        const mnemonic = await StorageService.StorageGetItem(
+            MNEMONIC_KEY,
+            true,
+        );
         if (success) {
-            dispatch(getWalletsSuccess(data));
+            dispatch(getWalletsSuccess({mnemonic: mnemonic, wallets: data}));
         }
         return {success, data};
     };
@@ -37,7 +44,21 @@ function getWallets() {
 function getAccountBalance() {
     return async dispatch => {
         const {success, data} = await WalletService.getAccountBalance();
+        if (success) {
+            dispatch(getAccountBalanceSuccess(data));
+        }
+        return {success, data};
+    };
+}
 
+function addWallet(token, chain, contract, external) {
+    return async dispatch => {
+        const {success, data} = await WalletService.addWallet(
+            token,
+            chain,
+            contract,
+            external,
+        );
         if (success) {
             dispatch(getAccountBalanceSuccess(data));
         }

@@ -12,10 +12,13 @@ import {StorageService} from '@modules/storage/StorageService';
 import {MarketService} from '@persistence/market/MarketService';
 import moment from 'moment';
 import convert from 'ether-converter';
+import _ from 'lodash';
+import bitcoin from 'bitcoin-units';
 
 export const WalletRepository = {
     getAccountBalance,
-    getTokenTransactionsByWallet,
+    getTransactionsByWallet,
+    getCoinDetails,
 };
 
 async function getAccountBalance() {
@@ -69,7 +72,7 @@ async function getAccountBalance() {
 }
 
 async function getTokenBalancesByWallets(wallets) {
-    Logs.info('Start: getTokenBalancesByWallets: ' + JSON.stringify(wallets));
+    Logs.info('Start: getTokenBalancesByWallets: ');
     const tokens = [];
     for (let i = 0; i < wallets.length; i++) {
         const wallet = wallets[i];
@@ -81,32 +84,56 @@ async function getTokenBalancesByWallets(wallets) {
         }/address/${wallet.walletAddress}/balances_v2/?key=${
             applicationProperties.covalentKey
         }`;
-        const {data, status} = await axios.get(url, {
-            timeout: 2000,
-        });
-        if (status === 200) {
-            const token = data.data;
-            const chain = token.chain_id;
-            const items = token.items;
-            for (let i = 0; i < items.length; i++) {
-                tokens.push({
-                    chain: CHAIN_ID_TYPE_MAP[chain],
-                    contract: items[i].contract_address.toLowerCase(),
-                    decimals: items[i].contract_decimals,
-                    balance: items[i].balance,
-                    rate: items[i].quote_rate,
-                });
+        try {
+            const {data, status} = await axios.get(url, {
+                timeout: 2000,
+            });
+            if (status === 200) {
+                const token = data.data;
+                const chain = token.chain_id;
+                const items = token.items;
+                for (let i = 0; i < items.length; i++) {
+                    tokens.push({
+                        chain: CHAIN_ID_TYPE_MAP[chain],
+                        contract: items[i].contract_address.toLowerCase(),
+                        decimals: items[i].contract_decimals,
+                        balance: items[i].balance,
+                        rate: items[i].quote_rate,
+                    });
+                }
             }
+        } catch (e) {
+            console.log(e);
         }
     }
-    Logs.info('End: getTokenBalanceByAddress: ' + JSON.stringify(tokens));
+    Logs.info('End: getTokenBalanceByAddress: ');
     return tokens;
 }
 
-async function getTokenTransactionsByWallet(wallet) {
-    Logs.info('Start: getTransactionsByWallet: ' + JSON.stringify(wallet));
+async function getTransactionsByWallet(wallet) {
+    if (wallet.cid === 'bitcoin') {
+        return getBTCTransactionsByWallet(wallet);
+    }
+    return getERCorBEPTransactionsByWallet(wallet);
+}
+
+async function getERCorBEPTransactionsByWallet(wallet) {
+    Logs.info('Start: getTransactionsByWallet: ');
     let transactions = [];
-    const url = `${applicationProperties.endPoints.binance}?module=account&action=tokentx&contractaddress=${wallet.contract}&address=${wallet.walletAddress}&page=1&offset=30&startblock=0&endblock=27025780&sort=desc&apikey=DI5F6DDAVHJHHNE3HH8SF7UTP2R4D7PTBU`;
+    let url = `${applicationProperties.endPoints.binance}`;
+    switch (wallet.cid) {
+        case 'ethereum':
+            url = `${applicationProperties.endPoints.eth}`;
+            break;
+        default:
+            break;
+    }
+
+    if (wallet.type === 'coin') {
+        url += `?module=account&action=txlist&address=${wallet.walletAddress}&startblock=0&endblock=99999999&page=1&offset=10&sort=desc&apikey=DI5F6DDAVHJHHNE3HH8SF7UTP2R4D7PTBU`;
+    } else {
+        url += `?module=account&action=tokentx&contractaddress=${wallet.contract}&address=${wallet.walletAddress}&page=1&offset=30&startblock=0&endblock=27025780&sort=desc&apikey=DI5F6DDAVHJHHNE3HH8SF7UTP2R4D7PTBU`;
+    }
     Logs.info(url);
     const {data, status} = await axios.get(url, {
         timeout: 2000,
@@ -146,8 +173,82 @@ async function getTokenTransactionsByWallet(wallet) {
             }
         }
     }
-    Logs.info(
-        'End: getTokenTransactionsByWallet: ' + JSON.stringify(transactions),
-    );
+    Logs.info('End: getTokenTransactionsByWallet: ');
     return transactions;
+}
+
+async function getBTCTransactionsByWallet(wallet) {
+    Logs.info('Start: getBTCTransactionsByWallet: ');
+    let transactions = [];
+    let url = `${applicationProperties.endPoints.btc}`;
+    const confirmed = await axios.get(
+        `${url}address/${wallet.walletAddress}/txs/chain`,
+        {
+            timeout: 2000,
+        },
+    );
+    const unconfirmed = await axios.get(
+        `${url}address/${wallet.walletAddress}/txs/mempool`,
+        {
+            timeout: 2000,
+        },
+    );
+    transactions = [...unconfirmed.data, ...confirmed.data];
+    for (let i = 0; i < transactions.length; i++) {
+        const vin = transactions[i].vin;
+        const isSender =
+            _.findIndex(vin, function (input) {
+                return input.prevout.scriptpubkey_address === address;
+            }) !== -1;
+        transactions[i].sender = isSender;
+        transactions[i].from = wallet.walletAddress;
+        const vout = transactions[i].vout;
+        let sum = 0;
+        _.forEach(vout, function (out) {
+            if (isSender) {
+                sum +=
+                    out.scriptpubkey_address !== wallet.walletAddress
+                        ? out.value
+                        : 0;
+            } else {
+                sum +=
+                    out.scriptpubkey_address === wallet.walletAddress
+                        ? out.value
+                        : 0;
+            }
+        });
+        transactions[i].to = vout[0].scriptpubkey_address;
+        transactions[i].etherValue = bitcoin(sum, 'satoshi').to('BTC').format();
+        transactions[i].date = moment(
+            transactions[i].status?.block_time,
+            'X',
+        ).fromNow();
+    }
+    Logs.info('End: getBTCTransactionsByWallet: ');
+    return transactions;
+}
+
+async function getCoinDetails(symbol) {
+    let config = {
+        method: 'get',
+        url:
+            applicationProperties.endPoints.coingecko +
+            '/coins/' +
+            symbol +
+            '?sparkline=true',
+    };
+    Logs.info('Get asset data: ', config);
+    try {
+        const {data} = await axios(config);
+        return {
+            success: true,
+            data,
+        };
+    } catch (e) {
+        Logs.error(e);
+        return {
+            success: false,
+            data,
+        };
+    }
 }

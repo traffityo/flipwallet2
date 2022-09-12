@@ -1,5 +1,6 @@
 import {applicationProperties} from '@src/application.properties';
 
+export const MNEMONIC_KEY = '@Mnemonic';
 export const WALLET_LIST_KEY = '@WalletList';
 export const CHAIN_ID_MAP = {
     ETH: 1,
@@ -49,6 +50,24 @@ export const COIN_LIST = [
         price: 0,
         active: true,
         image: 'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png',
+        version: applicationProperties.newAssetDescriptorVersion,
+    },
+    {
+        symbol: 'WETH',
+        name: 'Wrapped Ether',
+        cid: 'binancecoin',
+        chain: 'BSC',
+        type: ASSET_TYPE_TOKEN,
+        decimals: 18,
+        contract: '0x4DB5a66E937A9F4473fA95b1cAF1d1E1D62E29EA',
+        privKey: null,
+        walletAddress: null,
+        balance: 0,
+        unconfirmedBalance: 0,
+        value: 0,
+        price: 0,
+        active: true,
+        image: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png',
         version: applicationProperties.newAssetDescriptorVersion,
     },
 ];
