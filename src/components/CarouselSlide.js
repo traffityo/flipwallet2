@@ -5,18 +5,14 @@ import {useSelector} from 'react-redux';
 import CommonText from '@components/commons/CommonText';
 import CommonImage from '@components/commons/CommonImage';
 import {formatPrice} from '@src/utils/CurrencyUtil';
+import CommonTouchableOpacity from '@components/commons/CommonTouchableOpacity';
+import {useNavigation} from '@react-navigation/native';
 
 const SLIDE_WIDTH = Dimensions.get('window').width;
 const ITEM_WIDTH = SLIDE_WIDTH * 0.85;
-const data = [
-    {id: '12345', image: require('@assets/card1.png')},
-    {id: '123455', image: require('@assets/card2.png')},
-    {id: '123453', image: require('@assets/card3.png')},
-    {id: '1234345', image: require('@assets/card4.png')},
-];
-
 export default function CarouselSlide() {
     const {wallets} = useSelector(state => state.WalletReducer);
+    const navigation = useNavigation();
     const renderItem = ({item, index}, parallaxProps) => {
         let image = null;
         switch (index) {
@@ -34,7 +30,11 @@ export default function CarouselSlide() {
                 break;
         }
         return (
-            <View style={[styles.item]}>
+            <CommonTouchableOpacity
+                style={[styles.item]}
+                onPress={() => {
+                    navigation.navigate('WalletDetailScreen', {coin: item});
+                }}>
                 <ParallaxImage
                     source={image}
                     containerStyle={styles.imageContainer}
@@ -59,7 +59,7 @@ export default function CarouselSlide() {
                         </View>
                     </View>
                 </View>
-            </View>
+            </CommonTouchableOpacity>
         );
     };
     return (

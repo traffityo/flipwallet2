@@ -10,10 +10,13 @@ import CommonText from '@components/commons/CommonText';
 import {formatCoins, formatPrice} from '@src/utils/CurrencyUtil';
 import CommonTouchableOpacity from '@components/commons/CommonTouchableOpacity';
 import {useNavigation} from '@react-navigation/native';
+import Balance from '@components/Balance';
+import {useTranslation} from 'react-i18next';
 
 export default function HomeScreen() {
     const {theme} = useSelector(state => state.ThemeReducer);
     const {tokens} = useSelector(state => state.WalletReducer);
+    const {t} = useTranslation();
     const navigation = useNavigation();
     return (
         <SafeAreaView>
@@ -21,13 +24,13 @@ export default function HomeScreen() {
                 colors={[theme.gradientPrimary, theme.gradientSecondary]}
                 style={styles.gradient}>
                 <View style={styles.header}>
+                    <Balance />
                     <View>
                         <CommonImage
                             source={require('@assets/logo.png')}
                             style={styles.logo}
                         />
                     </View>
-                    <Icon type={Icons.Feather} name={'bell'} />
                 </View>
                 <View style={styles.carousel}>
                     <CarouselSlide />
@@ -35,7 +38,7 @@ export default function HomeScreen() {
                 <View style={styles.portfolioContainer}>
                     <View style={styles.portfolioHeader}>
                         <CommonText style={styles.portfolioTitle}>
-                            Your Portfolios
+                            {t('home.portfolios')}
                         </CommonText>
                         <CommonTouchableOpacity
                             onPress={() => {
@@ -54,51 +57,59 @@ export default function HomeScreen() {
                         keyExtractor={item => item.symbol}
                         renderItem={({item, index}) => {
                             return (
-                                <LinearGradient
-                                    colors={[
-                                        theme.gradientSecondary,
-                                        theme.gradientSecondary,
-                                    ]}
-                                    style={styles.item}>
-                                    <View style={styles.itemInfo}>
-                                        <CommonImage
-                                            source={{uri: item.image}}
-                                            style={styles.itemImg}
-                                        />
-                                        <View style={styles.itemDesc}>
-                                            <CommonText style={styles.itemName}>
-                                                {item.name}
-                                            </CommonText>
-                                            <CommonText
+                                <CommonTouchableOpacity
+                                    onPress={() => {
+                                        navigation.navigate(
+                                            'WalletDetailScreen',
+                                            {coin: item},
+                                        );
+                                    }}>
+                                    <View style={styles.item}>
+                                        <View style={styles.itemInfo}>
+                                            <CommonImage
+                                                source={{uri: item.image}}
+                                                style={styles.itemImg}
+                                            />
+                                            <View style={styles.itemDesc}>
+                                                <CommonText
+                                                    style={styles.itemName}>
+                                                    {item.name}
+                                                </CommonText>
+                                                <CommonText
+                                                    style={[
+                                                        styles.itemSymbol,
+                                                        {color: theme.text2},
+                                                    ]}>
+                                                    {item.symbol}
+                                                </CommonText>
+                                            </View>
+                                        </View>
+                                        <View style={styles.itemPrice}>
+                                            <View
                                                 style={[
-                                                    styles.itemSymbol,
-                                                    {color: theme.text2},
+                                                    styles.itemDesc,
+                                                    {alignItems: 'flex-end'},
                                                 ]}>
-                                                {item.symbol}
-                                            </CommonText>
+                                                <CommonText
+                                                    style={styles.itemName}>
+                                                    {formatCoins(item.balance) +
+                                                        ' ' +
+                                                        item.symbol}
+                                                </CommonText>
+                                                <CommonText
+                                                    style={[
+                                                        styles.itemSymbol,
+                                                        {color: theme.text2},
+                                                    ]}>
+                                                    {formatPrice(
+                                                        item.value,
+                                                        true,
+                                                    )}
+                                                </CommonText>
+                                            </View>
                                         </View>
                                     </View>
-                                    <View style={styles.itemPrice}>
-                                        <View
-                                            style={[
-                                                styles.itemDesc,
-                                                {alignItems: 'flex-end'},
-                                            ]}>
-                                            <CommonText style={styles.itemName}>
-                                                {formatCoins(item.balance) +
-                                                    ' ' +
-                                                    item.symbol}
-                                            </CommonText>
-                                            <CommonText
-                                                style={[
-                                                    styles.itemSymbol,
-                                                    {color: theme.text2},
-                                                ]}>
-                                                {formatPrice(item.value, true)}
-                                            </CommonText>
-                                        </View>
-                                    </View>
-                                </LinearGradient>
+                                </CommonTouchableOpacity>
                             );
                         }}
                     />
@@ -144,13 +155,12 @@ const styles = StyleSheet.create({
     item: {
         height: 80,
         width: '100%',
-        backgroundColor: 'red',
         marginBottom: 10,
         borderRadius: 10,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: 10,
+        borderBottomWidth: 0.5,
     },
     itemImg: {
         width: 42,

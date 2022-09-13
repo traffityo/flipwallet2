@@ -114,25 +114,28 @@ async function getTransactionsByWallet(wallet) {
     if (wallet.cid === 'bitcoin') {
         return getBTCTransactionsByWallet(wallet);
     }
-    return getERCorBEPTransactionsByWallet(wallet);
+    return getERCorBEPorPolygonTransactionsByWallet(wallet);
 }
 
-async function getERCorBEPTransactionsByWallet(wallet) {
+async function getERCorBEPorPolygonTransactionsByWallet(wallet) {
     Logs.info('Start: getTransactionsByWallet: ');
     let transactions = [];
-    let url = `${applicationProperties.endPoints.binance}`;
+    let url = `${applicationProperties.endPoints.apiBsc}`;
     switch (wallet.cid) {
         case 'ethereum':
-            url = `${applicationProperties.endPoints.eth}`;
+            url = `${applicationProperties.endPoints.apiEth}`;
+            break;
+        case 'polygon':
+            url = `${applicationProperties.endPoints.apiPolygon}`;
             break;
         default:
             break;
     }
 
     if (wallet.type === 'coin') {
-        url += `?module=account&action=txlist&address=${wallet.walletAddress}&startblock=0&endblock=99999999&page=1&offset=10&sort=desc&apikey=DI5F6DDAVHJHHNE3HH8SF7UTP2R4D7PTBU`;
+        url += `&module=account&action=txlist&address=${wallet.walletAddress}&startblock=0&endblock=99999999&page=1&offset=10&sort=desc`;
     } else {
-        url += `?module=account&action=tokentx&contractaddress=${wallet.contract}&address=${wallet.walletAddress}&page=1&offset=30&startblock=0&endblock=27025780&sort=desc&apikey=DI5F6DDAVHJHHNE3HH8SF7UTP2R4D7PTBU`;
+        url += `&module=account&action=tokentx&contractaddress=${wallet.contract}&address=${wallet.walletAddress}&page=1&offset=30&startblock=0&endblock=27025780&sort=desc`;
     }
     Logs.info(url);
     const {data, status} = await axios.get(url, {

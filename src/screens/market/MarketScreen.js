@@ -1,21 +1,17 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
 import CommonTouchableOpacity from '@components/commons/CommonTouchableOpacity';
 import FastImage from 'react-native-fast-image';
 import CommonImage from '@components/commons/CommonImage';
-import tokens from '@assets/json/tokens.json';
-import {useTranslation} from 'react-i18next';
 import BigList from 'react-native-big-list';
 import {useDispatch, useSelector} from 'react-redux';
 import LinearGradient from 'react-native-linear-gradient';
 import {MarketAction} from '@persistence/market/MarketAction';
 import CommonText from '@components/commons/CommonText';
-import {formatPrice} from '@src/utils/CurrencyUtil';
+import {formatPercentage, formatPrice} from '@src/utils/CurrencyUtil';
 import {LineChart} from 'react-native-chart-kit';
 
 export default function MarketScreen({navigation, route}) {
-    const [data, setData] = useState(tokens);
-    const {t} = useTranslation();
     const {theme} = useSelector(state => state.ThemeReducer);
     const {topCoins} = useSelector(state => state.MarketReducer);
     const dispatch = useDispatch();
@@ -25,9 +21,12 @@ export default function MarketScreen({navigation, route}) {
         })();
     }, []);
     const renderItem = ({item}) => {
+        const up = item.price_change_percentage_24h >= 0 ? true : false;
         return (
             <CommonTouchableOpacity
-                onPress={async () => {}}
+                onPress={async () => {
+                    navigation.navigate('MarketDetailScreen', {coin: item});
+                }}
                 style={styles.item}>
                 <CommonImage
                     style={styles.img}
@@ -38,7 +37,7 @@ export default function MarketScreen({navigation, route}) {
                     }}
                 />
                 <View style={styles.itemContent}>
-                    <View>
+                    <View style={{width: 100}}>
                         <CommonText style={styles.itemName} numberOfLines={1}>
                             {item.name}
                         </CommonText>
@@ -51,7 +50,12 @@ export default function MarketScreen({navigation, route}) {
                             {item.symbol.toUpperCase()}
                         </CommonText>
                     </View>
-                    <View style={{flex: 1, backgroundColor: 'white'}}>
+                    <View
+                        style={{
+                            flex: 1,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}>
                         <LineChart
                             withVerticalLabels={false}
                             withHorizontalLabels={false}
@@ -63,10 +67,9 @@ export default function MarketScreen({navigation, route}) {
                             withVerticalLines={false}
                             withOuterLines={false}
                             chartConfig={{
-                                color: () => 'red',
+                                color: () => (up ? '#00ff0a' : 'red'),
                                 backgroundGradientFromOpacity: 0,
                                 backgroundGradientToOpacity: 0,
-                                fillShadowGradient: 'blue',
                             }}
                             style={styles.chart}
                             data={{
@@ -85,12 +88,14 @@ export default function MarketScreen({navigation, route}) {
                             }}
                         />
                     </View>
-                    <View>
+                    <View style={{width: 100, alignItems: 'flex-end'}}>
                         <CommonText numberOfLines={1}>
                             {formatPrice(item.current_price)}
                         </CommonText>
-                        <CommonText numberOfLines={1}>
-                            {item.price_change_percentage_24h}
+                        <CommonText
+                            numberOfLines={1}
+                            style={{color: up ? '#00ff0a' : 'red'}}>
+                            {formatPercentage(item.price_change_percentage_24h)}
                         </CommonText>
                     </View>
                 </View>
@@ -193,7 +198,7 @@ const styles = StyleSheet.create({
     },
     chart: {
         paddingRight: 0,
-        paddingBottom: 20,
-        paddingTop: 20,
+        paddingBottom: 10,
+        paddingTop: 10,
     },
 });

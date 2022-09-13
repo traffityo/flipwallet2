@@ -30,3 +30,15 @@ export const formatNumber = nr => {
 export const formatNoComma = (nr: string) => {
     return nr.replace(/,/g, '.');
 };
+export const formatPercentage = nr => {
+    if (isNaN(nr)) {
+        return '-';
+    }
+    const newNr = new BigNumber(nr);
+    const isUp = newNr >= 0;
+    const number = Number(newNr.toFixed(2));
+    if (isUp) {
+        return '+' + number + '%';
+    }
+    return number + '%';
+};

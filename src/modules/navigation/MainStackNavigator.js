@@ -2,9 +2,9 @@ import {
     CardStyleInterpolators,
     createStackNavigator,
 } from '@react-navigation/stack';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import ReEnterPinCodeScreen from '@screens/pincode/ReEnterPinCodeScreen';
-import {AppState} from 'react-native';
+import {AppState, Platform} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import WalletDetailScreen from '@screens/wallet/WalletDetailScreen';
 import WalletReceiveScreen from '@screens/wallet/WalletReceiveScreen';
@@ -14,32 +14,55 @@ import WalletTransactionScreen from '@screens/wallet/WalletTransactionScreen';
 import WalletTransactionDetailScreen from '@screens/wallet/WalletTransactionDetailScreen';
 import TokenScreen from '@screens/token/TokenScreen';
 import BottomTabBarNavigator from '@modules/navigation/BottomTabBarNavigator';
+import MarketDetailScreen from '@screens/market/MarketDetailScreen';
+import {applicationProperties} from '@src/application.properties';
 
 const Stack = createStackNavigator();
 
 function MainStackNavigator() {
     const navigation = useNavigation();
-    const appState = useRef(AppState.currentState);
-    const [appStateVisible, setAppStateVisible] = useState(appState.current);
+    const [inBackground, setInBackground] = useState(false);
+    const [lastDate, setLastDate] = useState(Date.now());
     useEffect(() => {
         const subscription = AppState.addEventListener(
             'change',
             nextAppState => {
-                if (
-                    appState.current.match(/inactive|background/) &&
-                    nextAppState === 'active'
-                ) {
-                    navigation.navigate('ReEnterPinCodeScreen');
-                    console.log('App has come to the foreground!');
+                try {
+                    console.log(nextAppState);
+                    if (nextAppState === 'active' && inBackground) {
+                        setInBackground(false);
+                        if (Platform.OS === 'android') {
+                            const timeDiff = Date.now() - lastDate;
+                            if (
+                                timeDiff >
+                                applicationProperties.pinAndroidTimeout * 1000
+                            ) {
+                                try {
+                                    navigation.navigate('ReEnterPinCodeScreen');
+                                } catch (error) {
+                                    console.log(error);
+                                }
+                            }
+                        } else {
+                            try {
+                                navigation.navigate('ReEnterPinCodeScreen');
+                            } catch (error) {
+                                console.log(error);
+                            }
+                        }
+                    } else if (nextAppState === 'background') {
+                        setInBackground(true);
+                        setLastDate(Date.now());
+                    }
+                } catch (error) {
+                    setInBackground(false);
+                    console.log(error);
                 }
-                appState.current = nextAppState;
-                setAppStateVisible(appState.current);
-                console.log('AppState', appState.current);
             },
         );
 
         return () => {
-            subscription.remove();
+            subscription?.remove();
         };
     }, []);
     return (
@@ -78,6 +101,10 @@ function MainStackNavigator() {
                 component={WalletTransactionDetailScreen}
             />
             <Stack.Screen name="TokenScreen" component={TokenScreen} />
+            <Stack.Screen
+                name="MarketDetailScreen"
+                component={MarketDetailScreen}
+            />
         </Stack.Navigator>
     );
 }

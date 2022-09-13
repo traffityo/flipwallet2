@@ -216,6 +216,7 @@ export default function TokenScreen({navigation, route}) {
                                     WalletService.getSupportedChainNameByID(
                                         item.chain,
                                     );
+                                console.log(network);
                                 return (
                                     <CommonTouchableOpacity
                                         style={{

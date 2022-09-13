@@ -17,10 +17,10 @@ export const applicationProperties = {
             name: 'Light',
         },
     ],
-    appVersion: '1.3.7 (52)',
-    buildNumber: 52,
+    appVersion: '1.0',
+    buildNumber: 1,
     defaultDerivationKey: 0,
-    pinAndroidTimeout: 180, // seconds
+    pinAndroidTimeout: 10, // seconds
     balanceTimeout: 10, // seconds
     newAssetDescriptorVersion: 1,
     covalentKey: 'ckey_20124a251b804bd4b570908e3f4',
@@ -34,7 +34,7 @@ export const applicationProperties = {
         btc: 'https://www.blockchain.com/btc-testnet/',
         eth: 'https://etherscan.io/',
         bsc: 'https://bscscan.com/',
-        polygon: 'https://mumbai.polygonscan.com/',
+        polygon: 'https://polygonscan.com/',
         app: 'https://api.coingrig.com/app/',
         news: 'https://api.coingrig.com/news/',
         ramper: 'https://buy.ramp.network/?hostAppName=Coingrig&variant=mobile',
@@ -43,7 +43,10 @@ export const applicationProperties = {
         opensea: 'https://api.opensea.io/api/v1',
         assets: 'https://assets.coingrig.com/',
         moonpay: 'https://buy.moonpay.com/?currencyCode=bnb_bsc',
-        binance: 'https://api.bscscan.com/api',
+        apiBsc: 'https://api.bscscan.com/api?apiKey=DI5F6DDAVHJHHNE3HH8SF7UTP2R4D7PTBU',
+        apiEth: 'https://api.etherscan.com/api?apiKey=JW4VI7MBC4BFBYI29FGN17IYQCSNBCJSMQ',
+        apiPolygon:
+            'https://api.polygonscan.com/?apiKey=Z2BKEA7HR8YYQNAWT6AI1BFVWFNA6X2YSN',
     },
     defender: {
         apiKey: 'HLSdEb4qNwLEZxXqLWGHvJ5jAv6vL5UC',

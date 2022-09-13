@@ -1,66 +1,60 @@
-import React, {createRef, useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
     Alert,
-    Keyboard,
+    Dimensions,
     SafeAreaView,
+    ScrollView,
     StyleSheet,
     TextInput,
     View,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import {useTranslation} from 'react-i18next';
-import Icon, {Icons} from '@components/icons/Icons';
-import CommonTouchableOpacity from '@components/commons/CommonTouchableOpacity';
+import LinearGradient from 'react-native-linear-gradient';
+import CommonBackButton from '@components/commons/CommonBackButton';
 import CommonText from '@components/commons/CommonText';
+import {useTranslation} from 'react-i18next';
+import CommonTouchableOpacity from '@components/commons/CommonTouchableOpacity';
+import Icon, {Icons} from '@components/icons/Icons';
 import {formatNoComma, formatPrice} from '@src/utils/CurrencyUtil';
+import {WalletFactory} from '@coingrig/core';
+import Clipboard from '@react-native-clipboard/clipboard';
+import CommonLoading from '@components/commons/CommonLoading';
+import {showMessage} from 'react-native-flash-message';
+import {applicationProperties} from '@src/application.properties';
+import {Logs} from '@modules/log/logs';
+import CommonButton from '@components/commons/CommonButton';
+import ActionSheet from 'react-native-actions-sheet/src';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import {RNCamera} from 'react-native-camera';
-import ActionSheet from 'react-native-actions-sheet/src';
-import {WalletFactory} from '@coingrig/core';
-import {showMessage} from 'react-native-flash-message';
-import Clipboard from '@react-native-clipboard/clipboard';
-import {Logs} from '@modules/log/logs';
-import CommonLoading from '@components/commons/CommonLoading';
-import {applicationProperties} from '@src/application.properties';
-
-const actionSheetRef: React.RefObject<any> = createRef();
-const actionCamera: React.RefObject<any> = createRef();
 
 export default function WalletSendScreen({navigation, route}) {
-    const {item} = route.params;
-    const {theme} = useSelector(state => state.ThemeReducer);
+    const {coin} = route.params;
     const {t} = useTranslation();
-    const dispatch = useDispatch();
+    const {theme} = useSelector(state => state.ThemeReducer);
     const [destination, setDestination] = useState('');
     const [commissionFee, setCommissionFee] = useState(0);
+    const [commissionFeeFiat, setCommissionFeeFiat] = useState(0);
     const [value, setValue] = useState('');
     const [wallet, setWallet] = useState();
     const [fees, setFees] = useState();
     const [feeFiat, setFeeFiat] = useState(0);
     const [toFiat, setToFiat] = useState(0);
-    const [keyboardEnabled, setKeyboardEnabled] = useState(false);
-    useEffect(async () => {
-        await setupWallet();
-        const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
-            setKeyboardEnabled(true);
-        });
-        const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
-            setKeyboardEnabled(false);
-        });
-
-        return () => {
-            showSubscription.remove();
-            hideSubscription.remove();
-        };
+    const actionSheetRef = useRef(null);
+    const actionCamera = useRef(null);
+    const dispatch = useDispatch();
+    useEffect(() => {
+        (async () => {
+            await setupWallet();
+        })();
     }, []);
     const setAmount = v => {
         setValue(v);
         const formattedValue = formatNoComma(v);
-        const fiatValue = !formattedValue ? 0 : item.price * formattedValue;
+        const fiatValue = !formattedValue ? 0 : coin.price * formattedValue;
         setToFiat(fiatValue);
     };
     const setupWallet = async () => {
-        const _wallet = await WalletFactory.getWallet(item);
+        const _wallet = await WalletFactory.getWallet(coin);
         setWallet(_wallet);
     };
     const fetchCopiedText = async () => {
@@ -73,7 +67,6 @@ export default function WalletSendScreen({navigation, route}) {
         actionCamera.current?.setModalVisible(false);
     };
     const prepareTx = async () => {
-        Keyboard.dismiss();
         if (!value || !destination) {
             Alert.alert('Error', 'Please fill up the form');
             return;
@@ -92,9 +85,10 @@ export default function WalletSendScreen({navigation, route}) {
                 });
                 return;
             }
-            let fFiat = _fees.regular.getFeeValue() * item.price;
+            let fFiat = _fees.regular.getFeeValue() * coin.price;
             setFeeFiat(fFiat);
             setFees(_fees);
+            setCommissionFeeFiat(commissionFee * coin.price);
             CommonLoading.hide();
             actionSheetRef.current?.setModalVisible();
         } catch (error) {
@@ -118,7 +112,7 @@ export default function WalletSendScreen({navigation, route}) {
             let txCommission = await wallet.postTxSend(_fees1.regular);
             const nonce = await wallet
                 .getWeb3Client()
-                .eth.getTransactionCount(item.walletAddress);
+                .eth.getTransactionCount(coin.walletAddress);
             const newTx = {...fees.regular};
             newTx.settings.proposal.nonce = nonce + 1;
             let tx = await wallet.postTxSend(fees.regular);
@@ -148,159 +142,131 @@ export default function WalletSendScreen({navigation, route}) {
         }
     };
     return (
-        <View style={[styles.container]}>
-            <SafeAreaView>
-                <View style={styles.upperHeaderPlaceholder}></View>
-            </SafeAreaView>
-            <SafeAreaView
-                style={[styles.header, {backgroundColor: theme.background}]}>
-                <View style={styles.upperHeader}>
-                    <CommonTouchableOpacity
-                        onPress={() => {
-                            navigation.goBack();
-                        }}>
-                        <Icon type={Icons.Feather} name={'arrow-left'} />
-                    </CommonTouchableOpacity>
-                    <CommonText>
-                        {t('tx.available')}: {item?.balance ?? 0}{' '}
-                        {item?.symbol ?? ''}
-                    </CommonText>
-                    <Icon
-                        type={Icons.Ionicons}
-                        name={'stats-chart'}
-                        size={19}
-                    />
-                </View>
-            </SafeAreaView>
-            <View style={styles.scrollViewContent}>
-                <View style={[styles.maincontainer, {flex: 1}]}>
-                    <View style={styles.container}>
-                        <View
-                            style={{
-                                backgroundColor: 'white',
-                                borderRadius: 20,
-                                marginHorizontal: 5,
-                                marginTop: 10,
-                                padding: 10,
-                                elevation: 3,
-                            }}>
-                            <View style={styles.inputView}>
-                                <TextInput
-                                    style={styles.input}
-                                    onChangeText={v => setDestination(v)}
-                                    value={destination}
-                                    placeholder={t('tx.destination_address')}
-                                    numberOfLines={1}
-                                    returnKeyType="done"
-                                    placeholderTextColor="gray"
-                                    autoCompleteType={'off'}
-                                    autoCapitalize={'none'}
-                                    autoCorrect={false}
-                                />
-                                <CommonTouchableOpacity
-                                    onPress={async () => {
-                                        await fetchCopiedText();
-                                    }}
-                                    style={styles.moreBtn}>
-                                    <Icon
-                                        name="content-paste"
-                                        size={20}
-                                        type={Icons.MaterialIcons}
-                                    />
-                                </CommonTouchableOpacity>
-                                <CommonTouchableOpacity
-                                    onPress={() =>
-                                        actionCamera.current?.setModalVisible()
-                                    }
-                                    style={styles.moreBtn2}>
-                                    <Icon
-                                        name="qr-code"
-                                        size={21}
-                                        type={Icons.MaterialIcons}
-                                    />
-                                </CommonTouchableOpacity>
-                            </View>
-
-                            <View style={styles.inputView}>
-                                <TextInput
-                                    style={styles.input}
-                                    value={value}
-                                    placeholder={
-                                        item.symbol + ' ' + t('tx.amount')
-                                    }
-                                    onChangeText={async v => {
-                                        const commission = (v * 3) / 100;
-                                        setCommissionFee(commission);
-                                        setAmount(v);
-                                    }}
-                                    keyboardType="numeric"
-                                    numberOfLines={1}
-                                    returnKeyType="done"
-                                    placeholderTextColor="gray"
-                                />
-                                <CommonTouchableOpacity
-                                    style={styles.moreBtn2}
-                                    onPress={async () => {
-                                        const _fees =
-                                            await wallet.getTxSendProposals(
-                                                destination,
-                                                item.balance,
-                                            );
-                                        const commission =
-                                            (item.balance * 3) / 100;
-                                        const gasFee =
-                                            _fees.regular.getFeeValue() * 2;
-                                        setCommissionFee(commission);
-                                        const maxAmount =
-                                            item.balance - commission - gasFee;
-                                        setAmount(maxAmount.toString());
-                                    }}>
-                                    <CommonText>{t('tx.max')}</CommonText>
-                                </CommonTouchableOpacity>
-                            </View>
-                            <View
-                                style={{
-                                    justifyContent: 'space-between',
-                                    flexDirection: 'row',
-                                }}>
-                                <CommonText style={styles.toFiat}>
-                                    {formatPrice(toFiat, true) || '$0'}
-                                </CommonText>
-                            </View>
-                        </View>
+        <SafeAreaView style={styles.container}>
+            <LinearGradient
+                colors={[theme.gradientPrimary, theme.gradientSecondary]}
+                style={styles.gradient}>
+                <View style={styles.header}>
+                    <View style={styles.headerPriceContainer}>
+                        <CommonBackButton
+                            onPress={() => {
+                                navigation.goBack();
+                            }}
+                        />
                     </View>
-                    <View style={styles.preparetx}>
+                    <CommonText>
+                        {t('tx.available')}: {coin?.balance ?? 0}{' '}
+                        {coin?.symbol ?? ''}
+                    </CommonText>
+                    <View style={styles.headerPriceContainer}></View>
+                </View>
+                <ScrollView>
+                    <View style={styles.content}>
                         <View
-                            style={{
-                                paddingVertical: 5,
-                                justifyContent: 'center',
-                                alignSelf: 'center',
-                                marginBottom: 5,
-                            }}>
+                            style={[
+                                styles.inputView,
+                                {backgroundColor: theme.gradientSecondary},
+                            ]}>
+                            <TextInput
+                                style={styles.input}
+                                onChangeText={v => setDestination(v)}
+                                value={destination}
+                                placeholder={t('tx.destination_address')}
+                                numberOfLines={1}
+                                returnKeyType="done"
+                                placeholderTextColor="gray"
+                                autoCompleteType={'off'}
+                                autoCapitalize={'none'}
+                                autoCorrect={false}
+                            />
                             <CommonTouchableOpacity
+                                onPress={async () => {
+                                    await fetchCopiedText();
+                                }}
+                                style={styles.moreBtn}>
+                                <Icon
+                                    name="content-paste"
+                                    size={20}
+                                    type={Icons.MaterialIcons}
+                                />
+                            </CommonTouchableOpacity>
+                            <CommonTouchableOpacity
+                                onPress={() =>
+                                    actionCamera.current?.setModalVisible()
+                                }
+                                style={styles.moreBtn2}>
+                                <Icon
+                                    name="qr-code"
+                                    size={21}
+                                    type={Icons.MaterialIcons}
+                                />
+                            </CommonTouchableOpacity>
+                        </View>
+
+                        <View
+                            style={[
+                                styles.inputView,
+                                {backgroundColor: theme.gradientSecondary},
+                            ]}>
+                            <TextInput
+                                style={styles.input}
+                                value={value}
+                                placeholder={coin.symbol + ' ' + t('tx.amount')}
+                                onChangeText={async v => {
+                                    const commission = (v * 3) / 100;
+                                    setCommissionFee(commission);
+                                    setAmount(v);
+                                }}
+                                keyboardType="numeric"
+                                numberOfLines={1}
+                                returnKeyType="done"
+                                placeholderTextColor="gray"
+                            />
+                            <CommonTouchableOpacity
+                                style={styles.moreBtn2}
+                                onPress={async () => {
+                                    const _fees =
+                                        await wallet.getTxSendProposals(
+                                            destination,
+                                            coin.balance,
+                                        );
+                                    const commission = (coin.balance * 3) / 100;
+                                    const gasFee =
+                                        _fees.regular.getFeeValue() * 2;
+                                    setCommissionFee(commission);
+                                    const maxAmount =
+                                        coin.balance - commission - gasFee;
+                                    setAmount(maxAmount.toString());
+                                }}>
+                                <CommonText>{t('tx.max')}</CommonText>
+                            </CommonTouchableOpacity>
+                        </View>
+                        <View style={styles.fiatContainer}>
+                            <CommonText style={styles.toFiat}>
+                                {'\u2248' + formatPrice(toFiat, false) || '$0'}
+                            </CommonText>
+                        </View>
+                        <View style={styles.buttonContainer}>
+                            <CommonButton
+                                text={t('onboarding.next')}
                                 onPress={async () => {
                                     await prepareTx();
                                 }}
-                                style={[
-                                    styles.button,
-                                    {backgroundColor: '#26A17B'},
-                                ]}>
-                                <CommonText
-                                    style={[
-                                        styles.text,
-                                        {color: theme.background},
-                                    ]}>
-                                    {t('onboarding.next')}
-                                </CommonText>
-                            </CommonTouchableOpacity>
+                            />
                         </View>
                     </View>
                     <ActionSheet
                         ref={actionSheetRef}
                         gestureEnabled={true}
                         headerAlwaysVisible
-                        containerStyle={{flex: 1}}>
-                        <View style={{alignItems: 'center'}}>
+                        containerStyle={{
+                            flex: 1,
+                            backgroundColor: theme.gradientSecondary,
+                        }}>
+                        <View
+                            style={{
+                                alignItems: 'center',
+                            }}>
                             <CommonText style={styles.confirmtx}>
                                 {t('tx.confirm_tx')}
                             </CommonText>
@@ -309,31 +275,29 @@ export default function WalletSendScreen({navigation, route}) {
                                     {t('tx.amount_in_usd')}:{' '}
                                     {formatPrice(toFiat, true) || '$0'}
                                 </CommonText>
-                                <CommonText>
+                                <CommonText style={{marginBottom: 5}}>
                                     {t('tx.network_fee')}:{' '}
                                     {formatPrice(feeFiat, true)}
                                 </CommonText>
+                                <CommonText>
+                                    {t('tx.commission')}:{' '}
+                                    {formatPrice(commissionFeeFiat, true)}
+                                </CommonText>
                                 <CommonText style={styles.totalusd}>
                                     {t('tx.total_usd')}:{' '}
-                                    {formatPrice(toFiat + feeFiat)}
+                                    {formatPrice(
+                                        toFiat + feeFiat + commissionFeeFiat,
+                                    )}
                                 </CommonText>
                             </View>
-                            <CommonTouchableOpacity
-                                onPress={async () => {
-                                    await executeTX();
-                                }}
-                                style={[
-                                    styles.button,
-                                    {backgroundColor: '#26A17B'},
-                                ]}>
-                                <CommonText
-                                    style={[
-                                        styles.text,
-                                        {color: theme.background},
-                                    ]}>
-                                    {t('onboarding.next')}
-                                </CommonText>
-                            </CommonTouchableOpacity>
+                            <View style={styles.buttonContainer}>
+                                <CommonButton
+                                    text={t('onboarding.next')}
+                                    onPress={async () => {
+                                        await executeTX();
+                                    }}
+                                />
+                            </View>
                         </View>
                     </ActionSheet>
                     <ActionSheet
@@ -348,96 +312,75 @@ export default function WalletSendScreen({navigation, route}) {
                             flashMode={RNCamera.Constants.FlashMode.auto}
                         />
                     </ActionSheet>
-                </View>
-            </View>
-        </View>
+                </ScrollView>
+            </LinearGradient>
+        </SafeAreaView>
     );
 }
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'rgba(220,246,246,1)',
-    },
-    upperHeaderPlaceholder: {
-        height: 48,
     },
     header: {
+        height: 42,
         width: '100%',
-        position: 'absolute',
-    },
-    upperHeader: {
-        height: 48,
-        paddingHorizontal: 10,
         flexDirection: 'row',
-        alignItems: 'center',
         justifyContent: 'space-between',
+        alignItems: 'center',
     },
-    scrollViewContent: {
+    content: {
         flex: 1,
-    },
-    priceContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
         paddingHorizontal: 10,
+        height: Dimensions.get('window').height - 158,
     },
-    round: {
-        textAlign: 'center',
-        marginTop: 5,
+    gradient: {
+        width: '100%',
+        height: '100%',
     },
-    btnContainer: {
+
+    headerPriceContainer: {
+        width: 70,
+    },
+    headerPriceText: {textAlign: 'right', marginRight: 10},
+    inputView: {
+        height: 70,
+        borderWidth: 1,
+        paddingHorizontal: 10,
+        borderRadius: 5,
+        fontSize: 14,
+        marginVertical: 10,
+        marginBottom: 0,
+        marginHorizontal: 15,
         flexDirection: 'row',
         justifyContent: 'space-around',
-        marginTop: 45,
-        marginBottom: 10,
-        alignSelf: 'center',
-        width: '75%',
     },
-    roundBtn: {
-        width: 50,
-        height: 50,
-        alignContent: 'center',
+    input: {flex: 1, color: 'white'},
+    moreBtn: {
         justifyContent: 'center',
-        alignSelf: 'center',
-        alignItems: 'center',
-        borderRadius: 50,
+        marginRight: 20,
+        paddingLeft: 10,
     },
-    bigText: {
-        fontSize: 50,
-        textAlign: 'center',
-        fontFamily: 'RobotoSlab-Bold',
-        marginTop: '10%',
-        marginHorizontal: '20%',
-    },
-    pills: {
-        borderRadius: 5,
-        padding: 5,
-        margin: 10,
-    },
-    coins: {
-        fontSize: 18,
-        textAlign: 'center',
-        marginTop: 5,
-    },
-    maincontainer: {
-        flexDirection: 'column',
-        justifyContent: 'space-around',
+    moreBtn2: {
+        justifyContent: 'center',
+        marginRight: 10,
     },
     toFiat: {
         marginLeft: 20,
         marginTop: 10,
         fontSize: 28,
         fontWeight: 'bold',
-        fontFamily: 'RobotoSlab-Bold',
     },
-    available: {
-        fontSize: 12,
-        fontWeight: 'normal',
+    fiatContainer: {
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+    },
+    buttonContainer: {
+        height: 70,
+        width: '100%',
         justifyContent: 'center',
-        alignContent: 'center',
-        alignSelf: 'center',
-        // marginRight: 15,
-        marginTop: 3,
-        textAlign: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 18,
+        marginTop: 10,
     },
     cameracontainer: {
         margin: 10,
@@ -448,8 +391,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         textAlign: 'center',
         marginTop: 15,
-        fontFamily: 'RobotoSlab-Bold',
-        color: '#353333',
+        fontWeight: 'bold',
     },
     exectx: {
         marginTop: 30,
@@ -466,48 +408,5 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 20,
         marginBottom: 20,
-    },
-    preparetx: {flex: 1, justifyContent: 'flex-end', marginBottom: 40},
-    input: {flex: 1},
-    inputView: {
-        height: 50,
-        borderWidth: 1,
-        paddingHorizontal: 10,
-        borderRadius: 5,
-        fontSize: 14,
-        marginVertical: 10,
-        marginBottom: 0,
-        marginHorizontal: 15,
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-    },
-    moreBtn: {
-        justifyContent: 'center',
-        marginRight: 20,
-        paddingLeft: 10,
-    },
-    moreBtn2: {
-        justifyContent: 'center',
-        marginRight: 10,
-    },
-    value: {
-        height: 40,
-        marginVertical: 10,
-        borderWidth: 0.5,
-        padding: 10,
-        borderRadius: 5,
-        borderColor: '#756156',
-        fontSize: 14,
-        marginHorizontal: 20,
-    },
-    button: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 10,
-        paddingHorizontal: 32,
-        borderRadius: 10,
-        elevation: 3,
-        height: 70,
-        width: 350,
     },
 });

@@ -22,27 +22,11 @@ function createWallets(mnemonic, coinList = []) {
             coinList,
         );
         if (success) {
-            const tokens = _.filter(data, function (wallet: any) {
-                return (
-                    wallet.symbol !== 'BTC' ||
-                    wallet.symbol !== 'ETH' ||
-                    wallet.symbol !== 'BNB' ||
-                    wallet.symbol !== 'MATIC'
-                );
-            });
-            const wallets = _.filter(data, function (wallet: any) {
-                return (
-                    wallet.symbol === 'BTC' ||
-                    wallet.symbol === 'ETH' ||
-                    wallet.symbol === 'BNB' ||
-                    wallet.symbol === 'MATIC'
-                );
-            });
+            const payload = getTokensAndWallets(data);
             dispatch(
                 createWalletsSuccess({
                     mnemonic,
-                    wallets: wallets,
-                    tokens: tokens,
+                    ...payload,
                 }),
             );
         }
@@ -58,27 +42,11 @@ function getWallets() {
             true,
         );
         if (success) {
-            const tokens = _.filter(data, function (wallet: any) {
-                return (
-                    wallet.symbol !== 'BTC' &&
-                    wallet.symbol !== 'ETH' &&
-                    wallet.symbol !== 'BNB' &&
-                    wallet.symbol !== 'MATIC'
-                );
-            });
-            const wallets = _.filter(data, function (wallet: any) {
-                return (
-                    wallet.symbol === 'BTC' ||
-                    wallet.symbol === 'ETH' ||
-                    wallet.symbol === 'BNB' ||
-                    wallet.symbol === 'MATIC'
-                );
-            });
+            const payload = getTokensAndWallets(data);
             dispatch(
                 getWalletsSuccess({
                     mnemonic: mnemonic,
-                    wallets: wallets,
-                    tokens: tokens,
+                    ...payload,
                 }),
             );
         }
@@ -90,25 +58,8 @@ function getAccountBalance() {
     return async dispatch => {
         const {success, data} = await WalletService.getAccountBalance();
         if (success) {
-            const tokens = _.filter(data, function (wallet: any) {
-                return (
-                    wallet.symbol !== 'BTC' &&
-                    wallet.symbol !== 'ETH' &&
-                    wallet.symbol !== 'BNB' &&
-                    wallet.symbol !== 'MATIC'
-                );
-            });
-            const wallets = _.filter(data, function (wallet: any) {
-                return (
-                    wallet.symbol === 'BTC' ||
-                    wallet.symbol === 'ETH' ||
-                    wallet.symbol === 'BNB' ||
-                    wallet.symbol === 'MATIC'
-                );
-            });
-            dispatch(
-                getAccountBalanceSuccess({wallets: wallets, tokens: tokens}),
-            );
+            const payload = getTokensAndWallets(data);
+            dispatch(getAccountBalanceSuccess(payload));
         }
         return {success, data};
     };
@@ -123,26 +74,32 @@ function addWallet(token, chain, contract, external) {
             external,
         );
         if (success) {
-            const tokens = _.filter(data, function (wallet: any) {
-                return (
-                    wallet.symbol !== 'BTC' &&
-                    wallet.symbol !== 'ETH' &&
-                    wallet.symbol !== 'BNB' &&
-                    wallet.symbol !== 'MATIC'
-                );
-            });
-            const wallets = _.filter(data, function (wallet: any) {
-                return (
-                    wallet.symbol === 'BTC' ||
-                    wallet.symbol === 'ETH' ||
-                    wallet.symbol === 'BNB' ||
-                    wallet.symbol === 'MATIC'
-                );
-            });
-            dispatch(
-                getAccountBalanceSuccess({wallets: wallets, tokens: tokens}),
-            );
+            const payload = getTokensAndWallets(data);
+            dispatch(getAccountBalanceSuccess(payload));
         }
         return {success, data};
+    };
+}
+
+function getTokensAndWallets(data) {
+    const tokens = _.filter(data, function (wallet: any) {
+        return (
+            wallet.symbol !== 'BTC' &&
+            wallet.symbol !== 'ETH' &&
+            wallet.symbol !== 'BNB' &&
+            wallet.symbol !== 'MATIC'
+        );
+    });
+    const wallets = _.filter(data, function (wallet: any) {
+        return (
+            wallet.symbol === 'BTC' ||
+            wallet.symbol === 'ETH' ||
+            wallet.symbol === 'BNB' ||
+            wallet.symbol === 'MATIC'
+        );
+    });
+    return {
+        tokens,
+        wallets,
     };
 }
