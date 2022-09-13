@@ -8,8 +8,8 @@ import CommonTouchableOpacity from '@components/commons/CommonTouchableOpacity';
 import ColorUtil from '@src/utils/ColorUtil';
 import CommonText from '@components/commons/CommonText';
 import {useSelector} from 'react-redux';
-import WalletScreen from '@screens/wallet/WalletScreen';
 import SwapScreen from '@screens/swap/SwapScreen';
+import MarketScreen from '@screens/market/MarketScreen';
 
 const TabArr = [
     {
@@ -22,11 +22,11 @@ const TabArr = [
         alphaClr: ColorUtil.primaryAlpha,
     },
     {
-        route: 'WalletScreen',
+        route: 'MarketScreen',
         label: 'Market',
         type: Icons.Feather,
         icon: 'bar-chart',
-        component: SwapScreen,
+        component: MarketScreen,
         color: ColorUtil.black,
         alphaClr: ColorUtil.greenAlpha,
     },

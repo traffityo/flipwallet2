@@ -32,7 +32,7 @@ export default function App() {
             <StatusBar
                 hidden={false}
                 backgroundColor={'#03050c'}
-                barStyle={'dark-content'}
+                barStyle={'light-content'}
             />
             <ApplicationNavigator />
             <CommonLoading ref={ref => CommonLoading.setRef(ref)} />
