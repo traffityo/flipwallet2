@@ -132,7 +132,11 @@ export default function WalletDetailScreen({navigation, route}) {
                                 {coin.chain + ' ' + t('wallet.network')}
                             </CommonText>
                         </View>
-                        <View style={styles.btnContainer}>
+                        <View
+                            style={[
+                                styles.btnContainer,
+                                {width: coin.cid != 'bitcoin' ? '70%' : '60%'},
+                            ]}>
                             <View>
                                 <CommonTouchableOpacity
                                     onPress={() => {
@@ -189,34 +193,36 @@ export default function WalletDetailScreen({navigation, route}) {
                                     {t('wallet.receive')}
                                 </CommonText>
                             </View>
-                            <View>
-                                <CommonTouchableOpacity
-                                    onPress={() => {
-                                        navigation.navigate(
-                                            'WalletTransactionScreen',
+                            {coin.cid != 'bitcoin' && (
+                                <View>
+                                    <CommonTouchableOpacity
+                                        onPress={() => {
+                                            navigation.navigate(
+                                                'WalletTransactionScreen',
+                                                {
+                                                    coin: coin,
+                                                },
+                                            );
+                                        }}
+                                        style={[
+                                            styles.roundBtn,
                                             {
-                                                coin: coin,
+                                                backgroundColor:
+                                                    theme.gradientSecondary,
                                             },
-                                        );
-                                    }}
-                                    style={[
-                                        styles.roundBtn,
-                                        {
-                                            backgroundColor:
-                                                theme.gradientSecondary,
-                                        },
-                                    ]}>
-                                    <Icon
-                                        type={Icons.AntDesign}
-                                        name={'sync'}
-                                        size={24}
-                                        color={'white'}
-                                    />
-                                </CommonTouchableOpacity>
-                                <CommonText style={styles.round}>
-                                    {t('wallet.swap')}
-                                </CommonText>
-                            </View>
+                                        ]}>
+                                        <Icon
+                                            type={Icons.AntDesign}
+                                            name={'sync'}
+                                            size={24}
+                                            color={'white'}
+                                        />
+                                    </CommonTouchableOpacity>
+                                    <CommonText style={styles.round}>
+                                        {t('wallet.swap')}
+                                    </CommonText>
+                                </View>
+                            )}
                             <View>
                                 <CommonTouchableOpacity
                                     onPress={() => {
