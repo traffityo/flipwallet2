@@ -1,5 +1,11 @@
-import React, {useEffect, useState} from 'react';
-import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
+import {
+    RefreshControl,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    View,
+} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import LinearGradient from 'react-native-linear-gradient';
 import CommonBackButton from '@components/commons/CommonBackButton';
@@ -11,6 +17,8 @@ import {formatCoins, formatPrice} from '@src/utils/CurrencyUtil';
 import BigList from 'react-native-big-list';
 import CommonImage from '@components/commons/CommonImage';
 import {WalletService} from '@persistence/wallet/WalletService';
+import CommonLoading from '@components/commons/CommonLoading';
+import {WalletAction} from '@persistence/wallet/WalletAction';
 
 export default function WalletDetailScreen({navigation, route}) {
     const {coin} = route.params;
@@ -18,6 +26,14 @@ export default function WalletDetailScreen({navigation, route}) {
     const {theme} = useSelector(state => state.ThemeReducer);
     const dispatch = useDispatch();
     const [transactions, setTransactions] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
+    const onRefresh = useCallback(async () => {
+        CommonLoading.show();
+        dispatch(WalletAction.getAccountBalance()).then(() => {
+            setRefreshing(false);
+            CommonLoading.hide();
+        });
+    }, []);
     useEffect(() => {
         (async () => {
             const {success, data} = await WalletService.getTransactionsByWallet(
@@ -94,7 +110,13 @@ export default function WalletDetailScreen({navigation, route}) {
                         </CommonText>
                     </View>
                 </View>
-                <ScrollView>
+                <ScrollView
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                        />
+                    }>
                     <View style={styles.content}>
                         <View style={styles.priceContainer}>
                             <CommonText

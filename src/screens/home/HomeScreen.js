@@ -1,8 +1,8 @@
-import React from 'react';
-import {SafeAreaView, StyleSheet, View} from 'react-native';
+import React, {useCallback, useState} from 'react';
+import {RefreshControl, SafeAreaView, StyleSheet, View} from 'react-native';
 import CommonImage from '@components/commons/CommonImage';
 import LinearGradient from 'react-native-linear-gradient';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import CarouselSlide from '@components/CarouselSlide';
 import Icon, {Icons} from '@components/icons/Icons';
 import CommonFlatList from '@components/commons/CommonFlatList';
@@ -12,12 +12,23 @@ import CommonTouchableOpacity from '@components/commons/CommonTouchableOpacity';
 import {useNavigation} from '@react-navigation/native';
 import Balance from '@components/Balance';
 import {useTranslation} from 'react-i18next';
+import {WalletAction} from '@persistence/wallet/WalletAction';
+import CommonLoading from '@components/commons/CommonLoading';
 
 export default function HomeScreen() {
     const {theme} = useSelector(state => state.ThemeReducer);
     const {tokens} = useSelector(state => state.WalletReducer);
     const {t} = useTranslation();
     const navigation = useNavigation();
+    const [refreshing, setRefreshing] = useState(false);
+    const dispatch = useDispatch();
+    const onRefresh = useCallback(async () => {
+        CommonLoading.show();
+        dispatch(WalletAction.getAccountBalance()).then(() => {
+            setRefreshing(false);
+            CommonLoading.hide();
+        });
+    }, []);
     return (
         <SafeAreaView>
             <LinearGradient
@@ -55,6 +66,12 @@ export default function HomeScreen() {
                     <CommonFlatList
                         data={tokens}
                         keyExtractor={item => item.symbol}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={onRefresh}
+                            />
+                        }
                         renderItem={({item, index}) => {
                             return (
                                 <CommonTouchableOpacity
