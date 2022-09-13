@@ -135,11 +135,9 @@ export default function WalletScreen({navigation, route}) {
                 />
             </View>
             <ActionSheet
-                //@ts-ignore
                 ref={actionSheetRef}
                 gestureEnabled={true}
                 headerAlwaysVisible
-                // eslint-disable-next-line react-native/no-inline-styles
                 containerStyle={{
                     flex: 1,
                     backgroundColor: theme.background,
@@ -262,7 +260,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginLeft: 10,
         flex: 1.5,
-        // backgroundColor: 'red',
     },
     verticalLine: {
         backgroundColor: '#EDE2C1',
@@ -282,7 +279,6 @@ const styles = StyleSheet.create({
     coinName: {
         fontSize: 15,
         marginBottom: 0,
-        // fontFamily: 'RobotoSlab-Bold',
         fontWeight: 'bold',
     },
     balance: {
