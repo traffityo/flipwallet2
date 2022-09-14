@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react';
-import {SafeAreaView, StyleSheet, View} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
+import {RefreshControl, SafeAreaView, StyleSheet, View} from 'react-native';
 import CommonTouchableOpacity from '@components/commons/CommonTouchableOpacity';
 import FastImage from 'react-native-fast-image';
 import CommonImage from '@components/commons/CommonImage';
@@ -10,15 +10,24 @@ import {MarketAction} from '@persistence/market/MarketAction';
 import CommonText from '@components/commons/CommonText';
 import {formatPercentage, formatPrice} from '@src/utils/CurrencyUtil';
 import {LineChart} from 'react-native-chart-kit';
+import CommonLoading from '@components/commons/CommonLoading';
 
 export default function MarketScreen({navigation, route}) {
     const {theme} = useSelector(state => state.ThemeReducer);
     const {topCoins} = useSelector(state => state.MarketReducer);
     const dispatch = useDispatch();
+    const [refreshing, setRefreshing] = useState(false);
     useEffect(() => {
         (async () => {
             dispatch(MarketAction.getTopCoins(30));
         })();
+    }, []);
+    const onRefresh = useCallback(async () => {
+        CommonLoading.show();
+        dispatch(MarketAction.getTopCoins(30)).then(() => {
+            setRefreshing(false);
+            CommonLoading.hide();
+        });
     }, []);
     const renderItem = ({item}) => {
         const up = item.price_change_percentage_24h >= 0 ? true : false;
@@ -109,6 +118,12 @@ export default function MarketScreen({navigation, route}) {
                 style={styles.gradient}>
                 <View style={{flex: 1, marginHorizontal: 15}}>
                     <BigList
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={onRefresh}
+                            />
+                        }
                         data={topCoins}
                         renderItem={renderItem}
                         itemHeight={75}

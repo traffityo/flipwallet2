@@ -20,9 +20,10 @@ const EnterPinCodeScreen = () => {
     const success = async () => {
         CommonLoading.show();
         dispatch(WalletAction.getWallets()).then(() => {
-            dispatch(WalletAction.getAccountBalance()).then(() => {});
-            dispatch(UserAction.signIn()).then(() => {
-                CommonLoading.hide();
+            dispatch(WalletAction.getAccountBalance()).then(() => {
+                dispatch(UserAction.signIn()).then(() => {
+                    CommonLoading.hide();
+                });
             });
         });
     };

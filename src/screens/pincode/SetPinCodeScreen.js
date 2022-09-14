@@ -42,10 +42,13 @@ const SetPinCodeScreen = ({route}) => {
         dispatch(WalletAction.createWallets(mnemonic, COIN_LIST)).then(
             ({success}) => {
                 if (success) {
-                    dispatch(UserAction.signIn()).then(() => {
-                        CommonLoading.hide();
+                    dispatch(WalletAction.getAccountBalance()).then(() => {
+                        dispatch(UserAction.signIn()).then(() => {
+                            CommonLoading.hide();
+                        });
                     });
                 } else {
+                    CommonLoading.hide();
                     showMessage({
                         message: t('message.error.unable_to_create_wallets'),
                         type: 'danger',

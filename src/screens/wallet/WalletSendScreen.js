@@ -83,6 +83,7 @@ export default function WalletSendScreen({navigation, route}) {
                     message: t('message.error.amount_to_send_too_large'),
                     type: 'danger',
                 });
+                CommonLoading.hide();
                 return;
             }
             let fFiat = _fees.regular.getFeeValue() * coin.price;
@@ -261,12 +262,13 @@ export default function WalletSendScreen({navigation, route}) {
                         headerAlwaysVisible
                         containerStyle={{
                             flex: 1,
-                            backgroundColor: theme.gradientSecondary,
+                            backgroundColor: theme.gradientPrimary,
                         }}>
-                        <View
-                            style={{
-                                alignItems: 'center',
-                            }}>
+                        <LinearGradient
+                            colors={[
+                                theme.gradientPrimary,
+                                theme.gradientSecondary,
+                            ]}>
                             <CommonText style={styles.confirmtx}>
                                 {t('tx.confirm_tx')}
                             </CommonText>
@@ -298,7 +300,7 @@ export default function WalletSendScreen({navigation, route}) {
                                     }}
                                 />
                             </View>
-                        </View>
+                        </LinearGradient>
                     </ActionSheet>
                     <ActionSheet
                         ref={actionCamera}

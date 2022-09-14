@@ -201,9 +201,13 @@ export default function TokenScreen({navigation, route}) {
                     headerAlwaysVisible
                     containerStyle={{
                         flex: 1,
-                        backgroundColor: theme.background,
+                        backgroundColor: theme.gradientPrimary,
                     }}>
-                    <View style={{backgroundColor: theme.background}}>
+                    <LinearGradient
+                        colors={[
+                            theme.gradientPrimary,
+                            theme.gradientSecondary,
+                        ]}>
                         <CommonText style={styles.choose_network}>
                             {t('coindetails.choose_network')}
                         </CommonText>
@@ -216,16 +220,9 @@ export default function TokenScreen({navigation, route}) {
                                     WalletService.getSupportedChainNameByID(
                                         item.chain,
                                     );
-                                console.log(network);
                                 return (
                                     <CommonTouchableOpacity
-                                        style={{
-                                            height: 40,
-                                            width: '100%',
-                                            backgroundColor: theme.background,
-                                            paddingHorizontal: 10,
-                                            marginBottom: 5,
-                                        }}
+                                        style={styles.chooseItem}
                                         onPress={() => {
                                             saveWallet(
                                                 item.chain,
@@ -233,12 +230,15 @@ export default function TokenScreen({navigation, route}) {
                                                 false,
                                             );
                                         }}>
-                                        <CommonText>{network}</CommonText>
+                                        <CommonText
+                                            style={styles.chooseItemText}>
+                                            {network}
+                                        </CommonText>
                                     </CommonTouchableOpacity>
                                 );
                             }}
                         />
-                    </View>
+                    </LinearGradient>
                 </ActionSheet>
             </LinearGradient>
         </SafeAreaView>
@@ -327,5 +327,16 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 15,
         marginBottom: 25,
+    },
+    chooseItem: {
+        height: 40,
+        width: '100%',
+        paddingHorizontal: 10,
+        marginBottom: 5,
+        justifyContent: 'center',
+        borderBottomWidth: 0.5,
+    },
+    chooseItemText: {
+        fontWeight: 'bold',
     },
 });

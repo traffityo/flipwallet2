@@ -73,6 +73,17 @@ export default function HomeScreen() {
                             />
                         }
                         renderItem={({item, index}) => {
+                            let chainImg = require('@assets/ethereum.webp');
+                            switch (item.chain) {
+                                case 'POLYGON':
+                                    chainImg = require('@assets/matic-token-icon.webp');
+                                    break;
+                                case 'BSC':
+                                    chainImg = require('@assets/binance-coin-logo.webp');
+                                    break;
+                                default:
+                                    break;
+                            }
                             return (
                                 <CommonTouchableOpacity
                                     onPress={() => {
@@ -83,10 +94,17 @@ export default function HomeScreen() {
                                     }}>
                                     <View style={styles.item}>
                                         <View style={styles.itemInfo}>
-                                            <CommonImage
-                                                source={{uri: item.image}}
-                                                style={styles.itemImg}
-                                            />
+                                            <View>
+                                                <CommonImage
+                                                    source={{uri: item.image}}
+                                                    style={styles.itemImg}
+                                                />
+                                                <CommonImage
+                                                    source={chainImg}
+                                                    style={styles.chainImg}
+                                                />
+                                            </View>
+
                                             <View style={styles.itemDesc}>
                                                 <CommonText
                                                     style={styles.itemName}>
@@ -184,6 +202,15 @@ const styles = StyleSheet.create({
         height: 42,
         borderRadius: 10000,
         backgroundColor: 'black',
+    },
+    chainImg: {
+        width: 15,
+        height: 15,
+        borderRadius: 10000,
+        backgroundColor: 'black',
+        position: 'absolute',
+        borderWidth: 1,
+        borderColor: '#ce8621',
     },
     itemInfo: {
         flexDirection: 'row',

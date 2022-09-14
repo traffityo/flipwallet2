@@ -197,12 +197,9 @@ export default function WalletDetailScreen({navigation, route}) {
                                 <View>
                                     <CommonTouchableOpacity
                                         onPress={() => {
-                                            navigation.navigate(
-                                                'WalletTransactionScreen',
-                                                {
-                                                    coin: coin,
-                                                },
-                                            );
+                                            navigation.navigate('SwapScreen', {
+                                                coin: coin,
+                                            });
                                         }}
                                         style={[
                                             styles.roundBtn,
