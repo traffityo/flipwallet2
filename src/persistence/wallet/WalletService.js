@@ -180,7 +180,7 @@ async function addWallet(data, chain, contract, external) {
         value: 0,
         price: data.market_data?.current_price?.usd ?? 0,
         active: true,
-        image: data.image?.large || null,
+        image: data.thumb || null,
         walletAddress: null,
         version: applicationProperties.newAssetDescriptorVersion,
     };

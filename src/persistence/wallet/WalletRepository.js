@@ -238,7 +238,7 @@ async function getCoinDetails(symbol) {
             applicationProperties.endPoints.coingecko +
             '/coins/' +
             symbol +
-            '?sparkline=true',
+            '?sparkline=false',
     };
     Logs.info('Get asset data: ', config);
     try {
@@ -251,7 +251,7 @@ async function getCoinDetails(symbol) {
         Logs.error(e);
         return {
             success: false,
-            data,
+            data: {},
         };
     }
 }

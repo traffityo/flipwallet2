@@ -4,6 +4,7 @@ import {
     SafeAreaView,
     ScrollView,
     StyleSheet,
+    TextInput,
     View,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
@@ -11,12 +12,11 @@ import LinearGradient from 'react-native-linear-gradient';
 import CommonBackButton from '@components/commons/CommonBackButton';
 import CommonText from '@components/commons/CommonText';
 import CommonTouchableOpacity from '@components/commons/CommonTouchableOpacity';
-import Icon, {Icons} from '@components/icons/Icons';
 import {useTranslation} from 'react-i18next';
-import QRCode from 'react-native-qrcode-svg';
-import Tooltip from 'react-native-walkthrough-tooltip';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Share from 'react-native-share';
+import CommonImage from '@components/commons/CommonImage';
+import Icon, {Icons} from '@components/icons/Icons';
 
 export default function SwapScreen({navigation, route}) {
     const {coin} = route.params;
@@ -56,84 +56,76 @@ export default function SwapScreen({navigation, route}) {
                     <View style={styles.content}>
                         <View
                             style={[
-                                styles.qrCode,
+                                styles.inputView,
                                 {backgroundColor: theme.gradientSecondary},
                             ]}>
-                            <View style={styles.qrCodeHeader}></View>
-                            <QRCode
-                                value={coin.walletAddress}
-                                size={240}
-                                backgroundColor={'white'}
+                            <TextInput
+                                style={styles.input}
+                                onChangeText={v => {}}
+                                value={''}
+                                placeholder={t('tx.destination_address')}
+                                numberOfLines={1}
+                                returnKeyType="done"
+                                placeholderTextColor="gray"
+                                autoCompleteType={'off'}
+                                autoCapitalize={'none'}
+                                autoCorrect={false}
                             />
-                            <View style={styles.qrCodeFooter}>
-                                <CommonText
-                                    style={styles.text}
-                                    numberOfLines={1}
-                                    ellipsizeMode="middle">
-                                    {coin.walletAddress}
-                                </CommonText>
-                            </View>
-                        </View>
-                        <View style={styles.description}>
-                            <CommonText style={styles.text}>
-                                {t('wallet.receive.sendOnly')} {coin.symbol}{' '}
-                                {t('wallet.receive.toThisAddress')}
-                            </CommonText>
-                            <CommonText style={styles.text}>
-                                {t('wallet.receive.sendingAnyOtherCoins')}
-                            </CommonText>
-                        </View>
-                        <View style={styles.controls}>
                             <CommonTouchableOpacity
-                                style={styles.element}
-                                onPress={async () => {
-                                    await copyToClipboard(coin.walletAddress);
-                                    setTooltipVisible(true);
-                                    setTimeout(() => {
-                                        setTooltipVisible(false);
-                                    }, 1000);
-                                }}>
-                                <View style={[styles.elementIcon]}>
-                                    <Tooltip
-                                        isVisible={tooltipVisible}
-                                        content={
-                                            <CommonText
-                                                style={{color: 'black'}}>
-                                                {t(
-                                                    'wallet.receive.addressCopied',
-                                                )}
-                                            </CommonText>
-                                        }
-                                        placement="top"
-                                        onClose={() => {}}>
-                                        <Icon
-                                            type={Icons.Ionicons}
-                                            name={'copy'}
-                                            size={19}
-                                        />
-                                    </Tooltip>
-                                </View>
-                                <CommonText>
-                                    {t('wallet.receive.copy')}
-                                </CommonText>
+                                onPress={async () => {}}
+                                style={styles.tokenContainer}>
+                                <CommonImage
+                                    source={{uri: coin.image}}
+                                    style={styles.tokenImg}
+                                />
+                                <CommonText>{coin.symbol}</CommonText>
                             </CommonTouchableOpacity>
+                        </View>
+                        <View
+                            style={[
+                                styles.inputView,
+                                {backgroundColor: theme.gradientSecondary},
+                            ]}>
+                            <TextInput
+                                style={styles.input}
+                                onChangeText={v => {}}
+                                value={''}
+                                placeholder={t('tx.destination_address')}
+                                numberOfLines={1}
+                                returnKeyType="done"
+                                placeholderTextColor="gray"
+                                autoCompleteType={'off'}
+                                autoCapitalize={'none'}
+                                autoCorrect={false}
+                            />
                             <CommonTouchableOpacity
-                                style={styles.element}
-                                onPress={async () => {
-                                    await shareAddress();
-                                }}>
-                                <View style={[styles.elementIcon]}>
+                                onPress={async () => {}}
+                                style={styles.tokenContainer}>
+                                <View style={styles.tokenImg}>
                                     <Icon
-                                        type={Icons.FontAwesome}
-                                        name={'share'}
-                                        size={19}
+                                        name="plus"
+                                        size={21}
+                                        type={Icons.Feather}
                                     />
                                 </View>
-                                <CommonText>
-                                    {t('wallet.receive.share')}
-                                </CommonText>
+                                <CommonText>Select</CommonText>
                             </CommonTouchableOpacity>
                         </View>
+                        <CommonTouchableOpacity
+                            style={[
+                                styles.exchangeContainer,
+                                {
+                                    backgroundColor: theme.gradientSecondary,
+                                    borderColor: theme.gradientPrimary,
+                                    borderWidth: 0.5,
+                                },
+                            ]}>
+                            <Icon
+                                name="swap-vertical"
+                                size={21}
+                                type={Icons.MaterialCommunityIcons}
+                            />
+                        </CommonTouchableOpacity>
                     </View>
                 </ScrollView>
             </LinearGradient>
@@ -210,5 +202,53 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 100,
         marginBottom: 5,
+    },
+    headerPriceContainer: {
+        width: 70,
+    },
+    inputView: {
+        height: 70,
+        borderWidth: 1,
+        paddingHorizontal: 10,
+        borderRadius: 5,
+        fontSize: 14,
+        marginVertical: 10,
+        marginBottom: 0,
+        marginHorizontal: 15,
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+    },
+    input: {flex: 1, color: 'white'},
+    tokenContainer: {
+        justifyContent: 'center',
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: 70,
+    },
+    tokenImg: {
+        width: 24,
+        height: 24,
+        borderRadius: 50,
+        marginRight: 5,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    exchangeContainer: {
+        height: 32,
+        width: 32,
+        borderRadius: 5,
+        position: 'absolute',
+        top: 70,
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+
+        elevation: 5,
     },
 });

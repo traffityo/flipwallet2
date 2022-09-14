@@ -1,7 +1,7 @@
 import React from 'react';
 import FastImage from 'react-native-fast-image';
 
-export default function CommonImage({source,...rest}) {
+export default function TokenImage({source, ...rest}) {
     return (
         <FastImage
             resizeMode={'contain'}

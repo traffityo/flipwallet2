@@ -4,7 +4,8 @@ import CommonText from '@components/commons/CommonText';
 import CommonTouchableOpacity from '@components/commons/CommonTouchableOpacity';
 import FastImage from 'react-native-fast-image';
 import CommonImage from '@components/commons/CommonImage';
-import tokens from '@assets/json/tokens.json';
+import tokens from '@data/all.json';
+import all from '@assets/json/tokens.json';
 import {useTranslation} from 'react-i18next';
 import BigList from 'react-native-big-list';
 import {useDispatch, useSelector} from 'react-redux';
@@ -16,6 +17,9 @@ import {WalletService} from '@persistence/wallet/WalletService';
 import ActionSheet from 'react-native-actions-sheet';
 import CommonFlatList from '@components/commons/CommonFlatList';
 import {WalletAction} from '@persistence/wallet/WalletAction';
+import erc20 from '@data/polygon.json';
+import _ from 'lodash';
+import {Logs} from '@modules/log/logs';
 
 export default function TokenScreen({navigation, route}) {
     const [data, setData] = useState(tokens);
@@ -30,56 +34,91 @@ export default function TokenScreen({navigation, route}) {
     useEffect(() => {
         (async () => {})();
     }, []);
-    const chooseToken = async item => {
-        CommonLoading.show();
+    const getToken = () => {
+        const allTokens = [];
+        for (let i = 0; i < erc20.length; i++) {
+            const isExisted = _.find(all, {symbol: erc20[i].symbol});
+            if (!_.isNil(isExisted)) {
+                const newToken = {
+                    id: erc20[i].id,
+                    symbol: erc20[i].symbol,
+                    name: erc20[i].name,
+                    address: erc20[i].address,
+                    decimals: erc20[i].decimals,
+                    chainId: erc20[i].chainId,
+                    thumb: isExisted.thumb,
+                };
+                allTokens.push(newToken);
+            }
+        }
+        console.log(JSON.stringify(allTokens));
+    };
+    const getData = () => {
+        const allTokens = [];
+        for (let i = 0; i < erc20.length; i++) {
+            const isExisted = _.find(tokens, {symbol: erc20[i].symbol});
+            if (!_.isNil(isExisted)) {
+                const isChain = _.find(isExisted.platforms, {chain: 'POLYGON'});
+                if (_.isNil(isChain)) {
+                    const newToken = {
+                        id: erc20[i].id,
+                        symbol: erc20[i].symbol,
+                        name: erc20[i].name,
+                        thumb: erc20[i].thumb,
+                        platforms: [
+                            ...isExisted.platforms,
+                            {chain: 'POLYGON', contract: erc20[i].address},
+                        ],
+                    };
+                    allTokens.push(newToken);
+                }
+            } else {
+                // const newToken = {
+                //     id: erc20[i].id,
+                //     symbol: erc20[i].symbol,
+                //     name: erc20[i].name,
+                //     thumb: erc20[i].thumb,
+                //     platforms: [{chain: 'POLYGON', contract: erc20[i].address}],
+                // };
+                // allTokens.push(newToken);
+            }
+        }
+        console.log('ALL');
+        console.log(JSON.stringify([...tokens, ...allTokens]));
+    };
+    const getCoinDetail = async item => {
         try {
             const coinRes = await WalletRepository.getCoinDetails(item.id);
-            if (coinRes.success) {
-                let mappedPlatforms = [];
-                for (const [key, value] of Object.entries(
-                    coinRes.data.platforms,
-                )) {
-                    // Sanity check, the data comes with a "":"" pair
-                    if (key === '' || value === '') {
-                        continue;
-                    }
-                    // Is this chain supported?
-                    let platformChain =
-                        WalletService.getSupportedChainByName(key);
-                    if (platformChain === '') {
-                        continue;
-                    }
-                    let isExisted = false;
-                    for (let i = 0; i < wallets.length; i++) {
-                        if (
-                            wallets[i].chain === platformChain &&
-                            wallets[i].contract &&
-                            wallets[i].contract.toLowerCase() === value
-                        ) {
-                            isExisted = true;
-                            break;
-                        }
-                    }
-                    if (!isExisted) {
-                        mappedPlatforms.push({
-                            chain: platformChain,
-                            contract: value,
-                        });
-                    }
-                }
-                setPlatforms(mappedPlatforms);
-                setCoinData(coinRes.data);
-                CommonLoading.hide();
-                actionSheetRef.current?.setModalVisible(true);
-            } else {
-                CommonLoading.hide();
-                showMessage({
-                    message: t('message.error.remote_servers_not_available'),
-                    type: 'warning',
-                });
-            }
+            return coinRes;
         } catch (e) {
             CommonLoading.hide();
+        }
+    };
+    const chooseToken = async item => {
+        try {
+            let mappedPlatforms = [];
+            for (let i = 0; i < item.platforms.length; i++) {
+                let isExisted = false;
+                for (let j = 0; j < wallets.length; j++) {
+                    if (
+                        wallets[j].chain === item.platforms[i].chain &&
+                        wallets[j].contract &&
+                        wallets[j].contract.toLowerCase() ===
+                            item.platforms[i].contract
+                    ) {
+                        isExisted = true;
+                        break;
+                    }
+                }
+                if (!isExisted) {
+                    mappedPlatforms.push(item.platforms[i]);
+                }
+            }
+            setPlatforms(mappedPlatforms);
+            setCoinData(item);
+            actionSheetRef.current?.setModalVisible(true);
+        } catch (e) {
+            Logs.info(e);
         }
     };
     const saveWallet = (platform, contract, external) => {

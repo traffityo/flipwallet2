@@ -15,8 +15,8 @@ export default function StartScreen() {
                 <View style={styles.imageContainer}>
                     <CommonImage
                         source={require('@assets/bg.png')}
-                        style={{width: '100%', height: 575}}
-                        resizeMode={'stretch'}
+                        style={{width: '100%', height: 500}}
+                        resizeMode={'cover'}
                     />
                     <CommonImage
                         source={require('@assets/blur.png')}
