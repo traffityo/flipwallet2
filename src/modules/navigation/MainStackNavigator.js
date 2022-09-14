@@ -17,6 +17,7 @@ import BottomTabBarNavigator from '@modules/navigation/BottomTabBarNavigator';
 import MarketDetailScreen from '@screens/market/MarketDetailScreen';
 import {applicationProperties} from '@src/application.properties';
 import SwapScreen from '@screens/swap/SwapScreen';
+import SelectTokenScreen from '@screens/swap/SelectTokenScreen';
 
 const Stack = createStackNavigator();
 
@@ -107,6 +108,10 @@ function MainStackNavigator() {
                 component={MarketDetailScreen}
             />
             <Stack.Screen name="SwapScreen" component={SwapScreen} />
+            <Stack.Screen
+                name="SelectTokenScreen"
+                component={SelectTokenScreen}
+            />
         </Stack.Navigator>
     );
 }

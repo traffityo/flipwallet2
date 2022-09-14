@@ -2,6 +2,7 @@ import {WalletFactory} from '@coingrig/core';
 import {generateWallet} from '@coingrig/wallet-generator';
 import {StorageService} from '@modules/storage/StorageService';
 import {
+    CHAIN_ID_TYPE_MAP,
     MNEMONIC_KEY,
     WALLET_LIST_KEY,
 } from '@persistence/wallet/WalletConstant';
@@ -19,6 +20,7 @@ export const WalletService = {
     addWallet,
     getSupportedChainByName,
     getSupportedChainNameByID,
+    getWalletByChainId,
 };
 
 async function createWallets(mnemonic, coinList = []) {
@@ -109,6 +111,10 @@ async function getWalletByChain(chain) {
             data: {},
         };
     }
+}
+
+async function getWalletByChainId(chainId) {
+    return getWalletByChain(CHAIN_ID_TYPE_MAP[chainId]);
 }
 
 async function getWalletBySymbolAndContract(chain) {

@@ -42,3 +42,14 @@ export const formatPercentage = nr => {
     }
     return number + '%';
 };
+export const toWei = (amount, decimals) => {
+    return Number(new BigNumber(amount).multipliedBy(10 ** decimals));
+};
+
+export const toEth = (amount, decimals) => {
+    return String(new BigNumber(amount).div(10 ** decimals));
+};
+
+export const calcFee = (gas, gasPrice) => {
+    return Number(new BigNumber(gas).multipliedBy(gasPrice));
+};

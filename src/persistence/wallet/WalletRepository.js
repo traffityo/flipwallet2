@@ -19,6 +19,7 @@ export const WalletRepository = {
     getAccountBalance,
     getTransactionsByWallet,
     getCoinDetails,
+    getTokenBalancesByWallets,
 };
 
 async function getAccountBalance() {
