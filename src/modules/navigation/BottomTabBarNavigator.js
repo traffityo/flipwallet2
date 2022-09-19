@@ -10,6 +10,7 @@ import CommonText from '@components/commons/CommonText';
 import {useSelector} from 'react-redux';
 import SwapScreen from '@screens/swap/SwapScreen';
 import MarketScreen from '@screens/market/MarketScreen';
+import SettingScreen from '@screens/account/SettingScreen';
 
 const TabArr = [
     {
@@ -44,7 +45,7 @@ const TabArr = [
         label: 'Account',
         type: Icons.FontAwesome,
         icon: 'user-circle-o',
-        component: SwapScreen,
+        component: SettingScreen,
         color: ColorUtil.black,
         alphaClr: ColorUtil.purpleAlpha,
     },

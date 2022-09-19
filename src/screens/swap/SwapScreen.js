@@ -51,18 +51,22 @@ export default function SwapScreen({navigation, route}) {
     const dispatch = useDispatch();
     useEffect(() => {
         (async () => {
-            const nativeToken = {
-                address: coin ? coin.walletAddress : activeWallet.walletAddress,
-                balance: coin ? coin.balance : activeWallet.balance,
-                decimals: coin ? coin.decimals : activeWallet.decimals,
-                id: coin ? coin.symbol : activeWallet.symbol,
-                name: coin ? coin.name : activeWallet.name,
-                rate: coin ? coin.price : activeWallet.price,
-                symbol: coin ? coin.symbol : activeWallet.symbol,
-                thumb: coin ? coin.image : activeWallet.image,
-                isNative: coin ? coin.isNative : true,
-            };
-            setFromToken(nativeToken);
+            dispatch(WalletAction.getActiveWalletByChain(platform)).then(
+                ({data}) => {
+                    const nativeToken = {
+                        address: coin ? coin.walletAddress : data.walletAddress,
+                        balance: coin ? coin.balance : data.balance,
+                        decimals: coin ? coin.decimals : data.decimals,
+                        id: coin ? coin.symbol : data.symbol,
+                        name: coin ? coin.name : data.name,
+                        rate: coin ? coin.price : data.price,
+                        symbol: coin ? coin.symbol : data.symbol,
+                        thumb: coin ? coin.image : data.image,
+                        isNative: coin ? coin.isNative : true,
+                    };
+                    setFromToken(nativeToken);
+                },
+            );
         })();
     }, []);
     const reset = () => {

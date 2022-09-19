@@ -3,7 +3,7 @@ import {
     createStackNavigator,
 } from '@react-navigation/stack';
 import React, {useEffect, useState} from 'react';
-import ReEnterPinCodeScreen from '@screens/pincode/ReEnterPinCodeScreen';
+import ChangePinCodeScreen from '@screens/pincode/ChangePinCodeScreen';
 import {AppState, Platform} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import WalletDetailScreen from '@screens/wallet/WalletDetailScreen';
@@ -18,6 +18,8 @@ import MarketDetailScreen from '@screens/market/MarketDetailScreen';
 import {applicationProperties} from '@src/application.properties';
 import SwapScreen from '@screens/swap/SwapScreen';
 import SelectTokenScreen from '@screens/swap/SelectTokenScreen';
+import LanguageScreen from '@screens/account/LanguageScreen';
+import ConfirmPinCodeScreen from '@screens/pincode/ConfirmPinCodeScreen';
 
 const Stack = createStackNavigator();
 
@@ -40,14 +42,14 @@ function MainStackNavigator() {
                                 applicationProperties.pinAndroidTimeout * 1000
                             ) {
                                 try {
-                                    navigation.navigate('ReEnterPinCodeScreen');
+                                    navigation.navigate('ChangePinCodeScreen');
                                 } catch (error) {
                                     console.log(error);
                                 }
                             }
                         } else {
                             try {
-                                navigation.navigate('ReEnterPinCodeScreen');
+                                navigation.navigate('ChangePinCodeScreen');
                             } catch (error) {
                                 console.log(error);
                             }
@@ -79,7 +81,7 @@ function MainStackNavigator() {
             />
             <Stack.Screen
                 name="ReEnterPinCodeScreen"
-                component={ReEnterPinCodeScreen}
+                component={ChangePinCodeScreen}
             />
             <Stack.Screen
                 name="WalletDetailScreen"
@@ -111,6 +113,15 @@ function MainStackNavigator() {
             <Stack.Screen
                 name="SelectTokenScreen"
                 component={SelectTokenScreen}
+            />
+            <Stack.Screen name="LanguageScreen" component={LanguageScreen} />
+            <Stack.Screen
+                name="ConfirmPinCodeScreen"
+                component={ConfirmPinCodeScreen}
+            />
+            <Stack.Screen
+                name="ChangePinCodeScreen"
+                component={ChangePinCodeScreen}
             />
         </Stack.Navigator>
     );
