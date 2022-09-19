@@ -1,7 +1,7 @@
 import {applicationProperties} from '@src/application.properties';
 import axios from 'axios';
-import BigNumber from 'bignumber.js';
 import {WalletService} from '@persistence/wallet/WalletService';
+import {toEth} from '@src/utils/CurrencyUtil';
 
 export const TokenService = {
     getTokenBalance,
@@ -25,11 +25,11 @@ async function getTokenBalance(token) {
                         items[i].contract_address.toLowerCase() ===
                         token.address.toLowerCase()
                     ) {
-                        const balance = Number(
-                            new BigNumber(items[i].balance).div(
-                                10 ** items[i].decimals,
-                            ),
+                        const balance = toEth(
+                            items[i].balance,
+                            items[i].contract_decimals,
                         );
+                        console.log(balance);
                         token.balance = balance;
                         token.rate = items[i].quote_rate;
                         break;
@@ -37,6 +37,7 @@ async function getTokenBalance(token) {
                 }
             }
             return token;
+            console.log(token);
         } catch (e) {
             console.log(e);
             return token;

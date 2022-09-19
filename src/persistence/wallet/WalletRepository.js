@@ -69,6 +69,11 @@ async function getAccountBalance() {
             wallets[i].unconfirmedBalance = unconfirmedBalance;
         }
     }
+    await StorageService.StorageSetItem(
+        WALLET_LIST_KEY,
+        JSON.stringify(wallets),
+        true,
+    );
     return wallets;
 }
 
@@ -126,7 +131,7 @@ async function getERCorBEPorPolygonTransactionsByWallet(wallet) {
         case 'ethereum':
             url = `${applicationProperties.endPoints.apiEth}`;
             break;
-        case 'polygon':
+        case 'matic-network':
             url = `${applicationProperties.endPoints.apiPolygon}`;
             break;
         default:
@@ -185,18 +190,14 @@ async function getBTCTransactionsByWallet(wallet) {
     Logs.info('Start: getBTCTransactionsByWallet: ');
     let transactions = [];
     let url = `${applicationProperties.endPoints.btc}`;
-    const confirmed = await axios.get(
-        `${url}address/${wallet.walletAddress}/txs/chain`,
-        {
-            timeout: 2000,
-        },
-    );
-    const unconfirmed = await axios.get(
-        `${url}address/${wallet.walletAddress}/txs/mempool`,
-        {
-            timeout: 2000,
-        },
-    );
+    let confirmUrl = `${url}address/${wallet.walletAddress}/txs/chain`;
+    const confirmed = await axios.get(confirmUrl, {
+        timeout: 12000,
+    });
+    let unconfirmUrl = `${url}address/${wallet.walletAddress}/txs/mempool`;
+    const unconfirmed = await axios.get(unconfirmUrl, {
+        timeout: 12000,
+    });
     transactions = [...unconfirmed.data, ...confirmed.data];
     for (let i = 0; i < transactions.length; i++) {
         const vin = transactions[i].vin;

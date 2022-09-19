@@ -33,7 +33,9 @@ export default function CarouselSlide() {
             <CommonTouchableOpacity
                 style={[styles.item]}
                 onPress={() => {
-                    navigation.navigate('WalletDetailScreen', {coin: item});
+                    navigation.navigate('WalletDetailScreen', {
+                        coin: {...item, isNative: true},
+                    });
                 }}>
                 <ParallaxImage
                     source={image}

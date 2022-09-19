@@ -31,7 +31,7 @@ export const applicationProperties = {
     swapFee: 0, // 0%
     feeRecipient: '0x7e7397e93f6fb353ea0115da20f4ce399145b7d3',
     endPoints: {
-        btc: 'https://www.blockchain.com/btc-testnet/',
+        btc: 'https://www.blockchain.com/',
         eth: 'https://etherscan.io/',
         bsc: 'https://bscscan.com/',
         polygon: 'https://polygonscan.com/',
@@ -46,7 +46,7 @@ export const applicationProperties = {
         apiBsc: 'https://api.bscscan.com/api?apiKey=DI5F6DDAVHJHHNE3HH8SF7UTP2R4D7PTBU',
         apiEth: 'https://api.etherscan.com/api?apiKey=JW4VI7MBC4BFBYI29FGN17IYQCSNBCJSMQ',
         apiPolygon:
-            'https://api.polygonscan.com/?apiKey=Z2BKEA7HR8YYQNAWT6AI1BFVWFNA6X2YSN',
+            'https://api.polygonscan.com/api?apiKey=Z2BKEA7HR8YYQNAWT6AI1BFVWFNA6X2YSN',
     },
     defender: {
         apiKey: 'HLSdEb4qNwLEZxXqLWGHvJ5jAv6vL5UC',

@@ -68,7 +68,7 @@ export default function WalletSendScreen({navigation, route}) {
     };
     const prepareTx = async () => {
         if (!value || !destination) {
-            Alert.alert('Error', 'Please fill up the form');
+            Alert.alert('Error', t('swap.input_required'));
             return;
         }
         const amountToSend = formatNoComma(value.toString());
@@ -116,7 +116,8 @@ export default function WalletSendScreen({navigation, route}) {
                 .eth.getTransactionCount(coin.walletAddress);
             const newTx = {...fees.regular};
             newTx.settings.proposal.nonce = nonce + 1;
-            let tx = await wallet.postTxSend(fees.regular);
+            console.log(fees.regular);
+            let tx = await wallet.postTxSend(newTx);
             if (tx) {
                 CommonLoading.hide();
                 showMessage({

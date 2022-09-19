@@ -36,13 +36,12 @@ export default function WalletTransactionDetailScreen({navigation, route}) {
             case 'ethereum':
                 url = `${applicationProperties.endPoints.eth}tx/${tx.hash}`;
                 break;
-            case 'polygon':
+            case 'matic-network':
                 url = `${applicationProperties.endPoints.polygon}tx/${tx.hash}`;
                 break;
             default:
                 break;
         }
-        console.log(url);
         setUrl(url);
     }, []);
     return (

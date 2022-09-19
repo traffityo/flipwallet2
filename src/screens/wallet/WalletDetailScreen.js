@@ -197,8 +197,19 @@ export default function WalletDetailScreen({navigation, route}) {
                                 <View>
                                     <CommonTouchableOpacity
                                         onPress={() => {
-                                            navigation.navigate('SwapScreen', {
-                                                coin: coin,
+                                            dispatch(
+                                                WalletAction.getActiveWalletByChain(
+                                                    coin.chain,
+                                                ),
+                                            ).then(success => {
+                                                if (success) {
+                                                    navigation.navigate(
+                                                        'SwapScreen',
+                                                        {
+                                                            coin: coin,
+                                                        },
+                                                    );
+                                                }
                                             });
                                         }}
                                         style={[
@@ -250,7 +261,7 @@ export default function WalletDetailScreen({navigation, route}) {
                             <View style={styles.transactionContainer}>
                                 <View style={styles.transactionHeader}>
                                     <CommonText style={styles.transactionTitle}>
-                                        Transactions
+                                        {t('coindetails.transactions')}
                                     </CommonText>
                                     <Icon
                                         type={Icons.Feather}

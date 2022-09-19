@@ -11,6 +11,7 @@ import {useTranslation} from 'react-i18next';
 import BigList from 'react-native-big-list';
 import {useSelector} from 'react-redux';
 import LinearGradient from 'react-native-linear-gradient';
+import CommonLoading from '@components/commons/CommonLoading';
 
 export default function SelectTokenScreen({navigation, route}) {
     const {platform, onSelect} = route.params;
@@ -62,7 +63,10 @@ export default function SelectTokenScreen({navigation, route}) {
         return (
             <CommonTouchableOpacity
                 onPress={async () => {
+                    CommonLoading.show();
+                    console.log(item);
                     await onSelect(item);
+                    CommonLoading.hide();
                     navigation.goBack();
                 }}
                 style={styles.item}>

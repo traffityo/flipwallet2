@@ -3,6 +3,7 @@ import {createSlice} from '@reduxjs/toolkit';
 const WalletReducer = createSlice({
     name: 'wallet',
     initialState: {
+        activeWallet: {},
         wallets: [],
         tokens: [],
         totalBalance: 0.0,
@@ -29,6 +30,9 @@ const WalletReducer = createSlice({
                 return sum + o.value;
             }, 0.0);
         },
+        getActiveWalletSuccess(state, {payload}) {
+            state.activeWallet = payload;
+        },
     },
 });
 
@@ -39,6 +43,7 @@ export const {
     createWalletsSuccess,
     getWalletsSuccess,
     getAccountBalanceSuccess,
+    getActiveWalletSuccess,
 } = actions;
 // Export the reducer, either as a default or named export
 export default reducer;

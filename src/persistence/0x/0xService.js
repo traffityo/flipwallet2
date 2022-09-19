@@ -12,8 +12,6 @@ let APP_URI = {
 
 async function getQuote(chain, params) {
     let url = `${APP_URI[chain]}/quote`;
-    console.log(url);
-    console.log(params);
     let response = null;
     try {
         response = await axios.get(url, {
@@ -22,7 +20,7 @@ async function getQuote(chain, params) {
     } catch (ex) {
         console.log(ex.response.data);
         if (ex.response && ex.response.data) {
-            throw ex.response.data.reason;
+            return ex.response.data;
         }
     }
     return response?.data || null;

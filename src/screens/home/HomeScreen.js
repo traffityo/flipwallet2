@@ -73,7 +73,6 @@ export default function HomeScreen() {
                             />
                         }
                         renderItem={({item, index}) => {
-                            console.log(item.image);
                             let chainImg = require('@assets/ethereum.webp');
                             switch (item.chain) {
                                 case 'POLYGON':
@@ -90,7 +89,7 @@ export default function HomeScreen() {
                                     onPress={() => {
                                         navigation.navigate(
                                             'WalletDetailScreen',
-                                            {coin: item},
+                                            {coin: {...item, isNative: false}},
                                         );
                                     }}>
                                     <View style={styles.item}>

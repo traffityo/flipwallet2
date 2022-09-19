@@ -2,6 +2,7 @@ import {WalletService} from '@persistence/wallet/WalletService';
 import {
     createWalletsSuccess,
     getAccountBalanceSuccess,
+    getActiveWalletSuccess,
     getWalletsSuccess,
 } from '@persistence/wallet/WalletReducer';
 import {StorageService} from '@modules/storage/StorageService';
@@ -13,6 +14,7 @@ export const WalletAction = {
     getWallets,
     getAccountBalance,
     addWallet,
+    getActiveWalletByChain,
 };
 
 function createWallets(mnemonic, coinList = []) {
@@ -101,5 +103,17 @@ function getTokensAndWallets(data) {
     return {
         tokens,
         wallets,
+    };
+}
+
+function getActiveWalletByChain(chain) {
+    return async dispatch => {
+        const {success, data} = await WalletService.getWallets();
+        if (success) {
+            const activeWallet = _.find(data, {chain: chain});
+            dispatch(getActiveWalletSuccess(activeWallet));
+            return {success, data: activeWallet};
+        }
+        return {success, data};
     };
 }
