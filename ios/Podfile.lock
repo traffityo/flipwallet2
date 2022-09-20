@@ -335,8 +335,6 @@ PODS:
     - SDWebImageWebPCoder (~> 0.6.1)
   - RNGestureHandler (1.10.3):
     - React-Core
-  - RNInAppBrowser (3.6.3):
-    - React-Core
   - RNKeychain (8.0.0):
     - React-Core
   - RNLocalize (2.2.3):
@@ -345,6 +343,8 @@ PODS:
     - React
   - RNPermissions (3.0.5):
     - React-Core
+  - RNReanimated (1.13.0):
+    - React
   - RNScreens (3.6.0):
     - React-Core
     - React-RCTImage
@@ -417,11 +417,11 @@ DEPENDENCIES:
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
-  - RNInAppBrowser (from `../node_modules/react-native-inappbrowser-reborn`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - RNLocalize (from `../node_modules/react-native-localize`)
   - RNOS (from `../node_modules/react-native-os`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
+  - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNShare (from `../node_modules/react-native-share`)
   - RNSmartCode (from `../node_modules/react-native-smart-code`)
@@ -533,8 +533,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-fast-image"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
-  RNInAppBrowser:
-    :path: "../node_modules/react-native-inappbrowser-reborn"
   RNKeychain:
     :path: "../node_modules/react-native-keychain"
   RNLocalize:
@@ -543,6 +541,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-os"
   RNPermissions:
     :path: "../node_modules/react-native-permissions"
+  RNReanimated:
+    :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   RNShare:
@@ -609,11 +609,11 @@ SPEC CHECKSUMS:
   RNDeviceInfo: 7b82d1467b87f7e74d1c7ba9439a9a57d0c68ee9
   RNFastImage: a7384db75df352500261e8e8f1ac2026def26102
   RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
-  RNInAppBrowser: 3ff3a3b8f458aaf25aaee879d057352862edf357
   RNKeychain: 4f63aada75ebafd26f4bc2c670199461eab85d94
   RNLocalize: a64514b46a01375fdfae9349036b4dc7130333b5
   RNOS: 6f2f9a70895bbbfbdad7196abd952e7b01d45027
   RNPermissions: 7043bacbf928eae25808275cfe73799b8f618911
+  RNReanimated: 89f5e0a04d1dd52fbf27e7e7030d8f80a646a3fc
   RNScreens: eb0dfb2d6b21d2d7f980ad46b14eb306d2f1062e
   RNShare: 3acd1ed34a4baba2fd8541ba409045c37e5f62ff
   RNSmartCode: b7410d659677d180a640e850e15eb4980d744d70

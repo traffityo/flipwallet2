@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {View} from 'react-native';
 import Lottie from 'lottie-react-native';
+import CommonImage from '@components/commons/CommonImage';
 
 class CommonLoading extends Component {
     static _ref = null;
@@ -57,11 +58,15 @@ class CommonLoading extends Component {
                         justifyContent: 'center',
                         alignItems: 'center',
                     }}>
+                    <CommonImage
+                        source={require('@assets/logo.png')}
+                        style={{width: 16, height: 16, position: 'absolute'}}
+                    />
                     <Lottie
                         source={require('@assets/json/loading.json')}
                         autoPlay
                         loop
-                        style={{width: 172, height: 72}}
+                        style={{width: 96, height: 96}}
                     />
                 </View>
             );

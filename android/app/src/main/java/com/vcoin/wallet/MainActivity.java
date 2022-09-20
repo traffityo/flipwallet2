@@ -1,4 +1,4 @@
-package com.vcoin;
+package com.vcoin.wallet;
 
 import com.facebook.react.ReactActivity;
 

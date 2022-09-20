@@ -28,7 +28,7 @@ export const applicationProperties = {
     migrationKey: '@MIGRATION_KEY',
     initKey: '@INIT',
     oneSignalKey: '',
-    swapFee: 0, // 0%
+    swapFee: 0.05, // 0%
     feeRecipient: '0x7e7397e93f6fb353ea0115da20f4ce399145b7d3',
     endPoints: {
         btc: 'https://www.blockchain.com/',

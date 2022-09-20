@@ -5,8 +5,11 @@ import {applicationProperties} from '@src/application.properties';
 import _ from 'lodash';
 import CommonImage from '@components/commons/CommonImage';
 import {CommonActions} from '@react-navigation/native';
+import {useSelector} from 'react-redux';
+import LinearGradient from 'react-native-linear-gradient';
 
 export default function SplashScreen({navigation}) {
+    const {theme} = useSelector(state => state.ThemeReducer);
     useEffect(() => {
         (async () => {
             //await StorageService.StorageClearAll();
@@ -34,11 +37,15 @@ export default function SplashScreen({navigation}) {
 
     return (
         <View style={styles.container}>
-            <CommonImage
-                style={{height: 75, tintColor: '#353333'}}
-                resizeMode="contain"
-                source={require('@assets/logo.png')}
-            />
+            <LinearGradient
+                colors={[theme.gradientPrimary, theme.gradientSecondary]}
+                style={styles.gradient}>
+                <CommonImage
+                    style={{height: 75, tintColor: '#353333'}}
+                    resizeMode="contain"
+                    source={require('@assets/logo.png')}
+                />
+            </LinearGradient>
         </View>
     );
 }
@@ -49,8 +56,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     logo: {
-        fontFamily: 'RobotoSlab-Bold',
         fontSize: 40,
         letterSpacing: 1,
+    },
+    gradient: {
+        width: '100%',
+        height: '110%',
     },
 });
