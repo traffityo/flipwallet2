@@ -23,12 +23,9 @@ import {
     toEth,
     toWei,
 } from '@src/utils/CurrencyUtil';
-import {OxService} from '@persistence/0x/0xService';
 import CommonButton from '@components/commons/CommonButton';
 import {showMessage} from 'react-native-flash-message';
 import {WalletService} from '@persistence/wallet/WalletService';
-import {WalletFactory} from '@coingrig/core';
-import {ERC20_ABI, ZERO_EX_ADDRESS} from '@persistence/0x/0xConstant';
 import {applicationProperties} from '@src/application.properties';
 import {Logs} from '@modules/log/logs';
 import BigNumber from 'bignumber.js';
@@ -211,7 +208,6 @@ export default function SwapScreen({navigation, route}) {
         );
         if (walletByChain.success) {
             try {
-                const cryptoWallet = WalletFactory.getWallet(activeWallet);
                 let signingManager = cryptoWallet.getSigningManager();
                 let w3client = signingManager?.client;
                 if (!fromToken.isNative) {

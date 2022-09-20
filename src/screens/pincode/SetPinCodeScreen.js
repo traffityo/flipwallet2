@@ -3,8 +3,6 @@ import {useNavigation} from '@react-navigation/native';
 import {PinCode} from '@components/PinCode';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {useTranslation} from 'react-i18next';
-import {generateMnemonic} from '@coingrig/wallet-generator';
-import {WalletGenerator} from '@coingrig/core';
 import {COIN_LIST} from '@persistence/wallet/WalletConstant';
 import {showMessage} from 'react-native-flash-message';
 import {useDispatch, useSelector} from 'react-redux';

@@ -1,4 +1,3 @@
-import {getAllCoins, getCoins} from '@coingrig/core';
 import {Logs} from '@modules/log/logs';
 
 export const MarketService = {

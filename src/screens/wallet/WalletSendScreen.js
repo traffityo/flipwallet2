@@ -16,7 +16,6 @@ import {useTranslation} from 'react-i18next';
 import CommonTouchableOpacity from '@components/commons/CommonTouchableOpacity';
 import Icon, {Icons} from '@components/icons/Icons';
 import {formatNoComma, formatPrice} from '@src/utils/CurrencyUtil';
-import {WalletFactory} from '@coingrig/core';
 import Clipboard from '@react-native-clipboard/clipboard';
 import CommonLoading from '@components/commons/CommonLoading';
 import {showMessage} from 'react-native-flash-message';
@@ -54,7 +53,6 @@ export default function WalletSendScreen({navigation, route}) {
         setToFiat(fiatValue);
     };
     const setupWallet = async () => {
-        const _wallet = await WalletFactory.getWallet(coin);
         setWallet(_wallet);
     };
     const fetchCopiedText = async () => {
